@@ -1,8 +1,25 @@
-import requests
+# variables
+name = "Alice"
+age = 30
+height = 5.8
+isStudent = False
+fee = 900.50
 
-response = requests.get('https://api.github.com')
-print(response.json())
-if response.status_code == 200:
-    print("Request was successful!")
+welcome_banner = """
+Welcome to          the 
+                            lazy world of 
+            learning python
+                                you should care or someone has the skills you always wanted!!!!                
+
+"""
+
+print("Name:",name, ",Age:", age, ",Height:", height,",Is Student:", isStudent)
+
+print ("Age * Height =","-"*12, age ** 2 , "_"*25)
+
+print(welcome_banner)
+if not isStudent or not fee < 1000:
+    print("Hello ",name)
 else:
-    print("Request failed!")
+    print ("Hey I am Bart Simpson, who the hell are you??")
+  
