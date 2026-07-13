@@ -1,17 +1,17 @@
-for i in range(10):
-    print(i ** i)
+student = {
+    "name": "Sri",
+    "age":10,
+    "is_Student":False
+}
 
-# count by 2    
-for i in range(0, 20, 2):
-    print(i)
+print(student["age"].upper())
 
-# understand list
+# sets
 
-my_list = ["Sri","Potato","Tomato",10,True,False,33.33]
-print(my_list[-1])
-print(my_list[-3])
-print(my_list.append("Car"))
-print("*"*10)
+numbers = {1, 2, 3, 4, 5}
+random_numbers = {3, 4, 5, 6, 7,7,8,8,8,8,9,9,9,9,9}
 
-for item in my_list:
-    print(item)
+print(random_numbers)
+
+# tuples
+colors = ("red", "green", "blue")
