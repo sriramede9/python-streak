@@ -30,11 +30,12 @@ check_weather(18)
 
 def check_weather2(data: int) -> str:
     if not isinstance(data, int):
-           raise TypeError("data must be an integer")
+        raise TypeError("data must be an integer")
     if data > 25:
         return "Hot stay home"
     else:
         return "Go out you monster"
+
 
 try:
     decision = check_weather2("abc")
@@ -44,12 +45,27 @@ except TypeError as e:
 
 print(f"You better do this: {check_weather2(data=18)}")
 
-def concatStrings(value1:str="John",value2:str="Doe") -> str:
-    if not isinstance(value1,str) and not isinstance(value2,str):
+
+def concatStrings(value1: str = "John", value2: str = "Doe") -> str:
+    if not isinstance(value1, str) and not isinstance(value2, str):
         raise TypeError("Data must be str inngggggg")
     return value1 + value2
 
-print("Ohoo", {concatStrings("Dve","DJfs")}) # Hmm you are creating a set here dude
-print("Ohoo", concatStrings(value1="Dve",value2="DJfs")) 
-print(f"Ohoo {concatStrings(value1='Dve',value2='DJfs')}") 
 
+print("Ohoo", {concatStrings("Dve", "DJfs")})  # Hmm you are creating a set here dude
+print("Ohoo", concatStrings(value1="Dve", value2="DJfs"))
+print(f"Ohoo {concatStrings(value1='Dve', value2='DJfs')}")
+
+# welcome to handle multiple return values behold java and pojo
+
+
+def simple_function():
+    nums = [1, 2, 3, 4, 5, 56, 0]
+    first_value = nums[0]
+    min_value = min(nums)
+    max_value = max(nums)
+    return first_value, min_value, max_value
+
+
+a, b, c = simple_function()
+print(a, b, c)
