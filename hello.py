@@ -42,4 +42,14 @@ except TypeError as e:
     print(f"Type error {e}")
 
 
-print(f"You better do this: {check_weather2(18)}")
+print(f"You better do this: {check_weather2(data=18)}")
+
+def concatStrings(value1:str="John",value2:str="Doe") -> str:
+    if not isinstance(value1,str) and not isinstance(value2,str):
+        raise TypeError("Data must be str inngggggg")
+    return value1 + value2
+
+print("Ohoo", {concatStrings("Dve","DJfs")}) # Hmm you are creating a set here dude
+print("Ohoo", concatStrings(value1="Dve",value2="DJfs")) 
+print(f"Ohoo {concatStrings(value1='Dve',value2='DJfs')}") 
+
