@@ -69,3 +69,37 @@ def simple_function():
 
 a, b, c = simple_function()
 print(a, b, c)
+
+# import modules and part of modules
+
+import math
+
+math.sqrt(16)
+
+# import only part of modules
+from math import sqrt, pow 
+
+pow(2, 3)
+
+import random
+
+random.randint(1, 100)
+random.choice(["apple", "banana", "cherry"])
+
+# date time
+import datetime
+today = datetime.date.today()
+print(today)
+
+import os
+
+current_directory = os.getcwd()
+print(current_directory)
+
+import json
+data = {"name": "John", "age": 30, "city": "New York"}
+json_data = json.dumps(data)
+print(json_data) # formatted JSON
+print(data) # dictionary
+print(type(json_data)) # Json data in string format
+print(type(data)) # dictionary
