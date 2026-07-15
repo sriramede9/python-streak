@@ -17,3 +17,8 @@ print(arr[5:,])  # skip first 5 elements [6,76,7]
 # how to make it n dimensional array
 new_arr = np.array([1,2,3,4,5],ndmin=5) # crates a 5D array [[[[[1,2,3,4,5]]]]]
 #NumPy won't remove dimensions. It only adds singleton (size 1) dimensions if needed
+
+# understand data types 
+
+int_arr = np.array([1,2,3,4,5,6],dtype="i")
+print(type(int_arr))
