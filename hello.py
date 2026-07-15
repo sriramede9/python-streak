@@ -22,3 +22,24 @@ new_arr = np.array([1,2,3,4,5],ndmin=5) # crates a 5D array [[[[[1,2,3,4,5]]]]]
 
 int_arr = np.array([1,2,3,4,5,6],dtype="i")
 print(type(int_arr))
+
+arr = np.array(['apple', 'banana', 'cherry'])
+
+print(arr.dtype)
+
+arr = np.array([1, 2, 3, 4], dtype='U')
+
+print(arr)
+print(arr.dtype)
+
+try:
+    arr = np.array(['a', '2', '3'], dtype='i')
+except ValueError as e:
+    print("Error:", e)
+
+# Converting Data Type on Existing Arrays
+
+double_arr = np.array([1.1, 2.2, 3.3, 4.4])
+print(double_arr.dtype)  # float64
+int_arr = double_arr.astype('i')  # convert to integer
+print(int_arr)  # [1 2 3 4]
