@@ -1,5 +1,7 @@
 # understanding pydantic
 import numpy as np
+import geopy.geocoders
+import requests
 
 arr = np.array([1, 2, 3, 4, 5, 6, 76, 7])
 print(arr)
@@ -78,12 +80,9 @@ print(streams_arr * 2)  # doubles each element in the array
 
 # understandin API's
 
-from geopy.geocoders import Nominatim
-
-
 def get_city_coordinates(city_name):
     # Initialize Nominatim API with a descriptive user agent (required by OSM policy)
-    geolocator = Nominatim(user_agent="my_city_geocoder_app")
+    geolocator = geopy.geocoders.Nominatim(user_agent="my_city_geocoder_app")
 
     try:
         # Request location data
@@ -100,9 +99,6 @@ def get_city_coordinates(city_name):
 
     except Exception as e:
         return f"An error occurred: {e}"
-
-
-import requests
 
 # Build the API URL with our parameters
 
