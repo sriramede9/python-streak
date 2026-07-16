@@ -2,6 +2,9 @@
 import numpy as np
 import geopy.geocoders
 import requests
+import pandas as pd
+import matplotlib.pyplot as plt
+import os as os
 
 arr = np.array([1, 2, 3, 4, 5, 6, 76, 7])
 print(arr)
@@ -80,6 +83,7 @@ print(streams_arr * 2)  # doubles each element in the array
 
 # understandin API's
 
+
 def get_city_coordinates(city_name):
     # Initialize Nominatim API with a descriptive user agent (required by OSM policy)
     geolocator = geopy.geocoders.Nominatim(user_agent="my_city_geocoder_app")
@@ -100,13 +104,15 @@ def get_city_coordinates(city_name):
     except Exception as e:
         return f"An error occurred: {e}"
 
+
 # Build the API URL with our parameters
 
 
-def get_weather_data(latitude, longitude):
-    url = f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current=temperature_2m"
+def get_weather_data(url):
+
     try:
         response = requests.get(url)
+        print(response)
     except requests.exceptions.RequestException as e:
         return {"error": f"An error occurred while fetching weather data: {e}"}
     else:
@@ -120,7 +126,7 @@ def get_weather_data(latitude, longitude):
 
 
 # Example Usage
-city = "Hudson Bay, Canada"
+city = "Niagara, Canada"
 coordinates = get_city_coordinates(city)
 print(coordinates)
 
@@ -128,6 +134,75 @@ print(coordinates)
 latitude = coordinates["latitude"]  #  latitude
 longitude = coordinates["longitude"]  #  longitude
 
-get_weather = get_weather_data(latitude, longitude)  # to check exception handling
-get_weather = get_weather_data(95, 45)  # to check exception handling
+get_weather = get_weather_data(
+    url=f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current=temperature_2m",
+)  # to check exception handling
+get_weather2 = get_weather_data(
+    url=f"https://api.open-meteo.com/v1/forecast?latitude=95&longitude=45&current=temperature_2m",
+)  # to check exception handling
 print(get_weather)
+
+
+def forecast_weather(city_name):
+    coordinates = get_city_coordinates(city_name)
+    if "error" in coordinates:
+        return coordinates  # Return the error message if city not found
+
+    latitude = coordinates["latitude"]
+    longitude = coordinates["longitude"]
+
+    weather_data = get_weather_data(
+        url=f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&daily=temperature_2m_max,temperature_2m_min"
+    )
+    return weather_data
+
+
+data = forecast_weather("Niagara, Canada")
+print(data["daily"])
+
+daily_data = data["daily"]
+
+df = pd.DataFrame(
+    {
+        "date": daily_data["time"],
+        "max_temp": daily_data["temperature_2m_max"],
+        "min_temp": daily_data["temperature_2m_min"],
+    }
+)
+
+print(pd.to_datetime(df["date"]))
+
+# This replaces the old string dates with the new datetime objects
+df["date"] = pd.to_datetime(df["date"])
+
+# Now, if you inspect the whole DataFrame, the 'date' column is updated!
+print(df.dtypes)
+
+
+# Create the plot
+plt.figure(figsize=(10, 6))
+plt.plot(df["date"], df["max_temp"], marker="o", label="Max Temp")
+plt.plot(df["date"], df["min_temp"], marker="o", label="Min Temp")
+
+# Add labels and title
+plt.xlabel("Date")
+plt.ylabel("Temperature (°C)")
+plt.title("Niagara Falls Weather - Past 7 Days")
+plt.legend()
+
+# Rotate x-axis labels for readability
+plt.xticks(rotation=45)
+plt.tight_layout()
+
+# Save the plot
+# plt.savefig('weather_chart.png')
+plt.show()
+
+if not os.path.exists("data"):
+    os.mkdir("data")
+
+plt.savefig("data/Niagara_Weather.png")
+df.to_csv("data/Niagara_Weather.csv", index=False)
+
+# Average Temperature in NIAGARA
+print(f"Avg Temp in Niagara is {df['max_temp'].mean():.1f}C")
