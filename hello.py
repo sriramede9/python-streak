@@ -74,3 +74,64 @@ print(streams_arr * 2)  # doubles each element in the array
 # the main diff between list and ndarray is that ndarray is more efficient in terms of memory and performance. It allows for vectorized operations, meaning you can perform operations on entire arrays without the need for explicit loops, which is not possible with standard Python lists.
 # allso list stores in objects and ndarray stores in contiguous memory locations which makes it more efficient for numerical computations.
 # plus , minus, multiplication, division and other operations are performed element-wise in ndarray, while in lists you would need to use loops or comprehensions to achieve similar results.
+
+
+# understandin API's
+
+from geopy.geocoders import Nominatim
+
+
+def get_city_coordinates(city_name):
+    # Initialize Nominatim API with a descriptive user agent (required by OSM policy)
+    geolocator = Nominatim(user_agent="my_city_geocoder_app")
+
+    try:
+        # Request location data
+        location = geolocator.geocode(city_name)
+
+        if location:
+            return {
+                "address": location.address,
+                "latitude": location.latitude,
+                "longitude": location.longitude,
+            }
+        else:
+            return "City not found."
+
+    except Exception as e:
+        return f"An error occurred: {e}"
+
+
+import requests
+
+# Build the API URL with our parameters
+
+
+def get_weather_data(latitude, longitude):
+    url = f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current=temperature_2m"
+    try:
+        response = requests.get(url)
+    except requests.exceptions.RequestException as e:
+        return {"error": f"An error occurred while fetching weather data: {e}"}
+    else:
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(
+                f"Error: Received status code {response.status_code} from the weather API."
+            )
+            return {"error": "Unable to fetch weather data."}
+
+
+# Example Usage
+city = "Hudson Bay, Canada"
+coordinates = get_city_coordinates(city)
+print(coordinates)
+
+# We need coordinates to get weather data
+latitude = coordinates["latitude"]  #  latitude
+longitude = coordinates["longitude"]  #  longitude
+
+get_weather = get_weather_data(latitude, longitude)  # to check exception handling
+get_weather = get_weather_data(95, 45)  # to check exception handling
+print(get_weather)
