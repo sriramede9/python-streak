@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os as os
 import json
+from pypdf import PdfReader
 
 arr = np.array([1, 2, 3, 4, 5, 6, 76, 7])
 print(arr)
@@ -240,3 +241,18 @@ df = pd.read_csv("data/Niagara_Weather.csv",parse_dates=["date"])
 print(df["date"].dtype) # string man
 
 print(df["date"] + pd.Timedelta(days=1))
+
+df.head()
+df.tail()
+df.info()
+df.describe()
+df.dtypes
+
+reader = PdfReader("data/sample.pdf")
+
+for page in reader.pages:
+    text = page.extract_text()
+    if(text):
+        print(text)
+
+print(type(reader))
