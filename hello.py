@@ -140,7 +140,7 @@ get_weather = get_weather_data(
     url=f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current=temperature_2m",
 )  # to check exception handling
 get_weather2 = get_weather_data(
-    url=f"https://api.open-meteo.com/v1/forecast?latitude=95&longitude=45&current=temperature_2m",
+    url="https://api.open-meteo.com/v1/forecast?latitude=95&longitude=45&current=temperature_2m",
 )  # to check exception handling
 print(get_weather)
 
@@ -236,9 +236,9 @@ name = [
 print(name)
 
 
-df = pd.read_csv("data/Niagara_Weather.csv",parse_dates=["date"])
+df = pd.read_csv("data/Niagara_Weather.csv", parse_dates=["date"])
 
-print(df["date"].dtype) # string man
+print(df["date"].dtype)  # string man
 
 print(df["date"] + pd.Timedelta(days=1))
 
@@ -252,7 +252,7 @@ reader = PdfReader("data/sample.pdf")
 
 for page in reader.pages:
     text = page.extract_text()
-    if(text):
+    if text:
         print(text)
 
 print(type(reader))
