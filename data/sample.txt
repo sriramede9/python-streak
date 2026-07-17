@@ -1,0 +1,3 @@
+This is a sample text file.
+wondering how to open this using python and read it 
+what the heck is with 

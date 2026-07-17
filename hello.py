@@ -5,6 +5,7 @@ import requests
 import pandas as pd
 import matplotlib.pyplot as plt
 import os as os
+import json
 
 arr = np.array([1, 2, 3, 4, 5, 6, 76, 7])
 print(arr)
@@ -206,3 +207,36 @@ df.to_csv("data/Niagara_Weather.csv", index=False)
 
 # Average Temperature in NIAGARA
 print(f"Avg Temp in Niagara is {df['max_temp'].mean():.1f}C")
+
+# play with various files
+
+with open("data/sample.txt", "r", encoding="utf-8") as f:
+    text = f.read()
+print(text)
+
+with open("data/sample.json", "r") as f:
+    data = json.load(f)
+
+print(data["users"][0]["id"])
+
+for d in data["users"]:
+    print(d["address"]["city"])
+
+cities = [users["address"]["city"] for users in data["users"]]
+print(cities)
+
+# who lives in Gwenborough
+
+name = [
+    users["name"]
+    for users in data["users"]
+    if users["address"]["city"] == "Gwenborough"
+]
+print(name)
+
+
+df = pd.read_csv("data/Niagara_Weather.csv",parse_dates=["date"])
+
+print(df["date"].dtype) # string man
+
+print(df["date"] + pd.Timedelta(days=1))
