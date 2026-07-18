@@ -24,13 +24,17 @@ for index,row in df.iterrows():
 
 print(totals)
 
+df['totals'] = totals
+
 # df['total'] = df["quantity"] * df["price"]
 
 # print(df['total'])
 
 ##display formatted totals
 
+data = [format_currency(total) for total in totals]
 
+print(data)
 
 os.mkdirs('output',exist_ok=True)
 
