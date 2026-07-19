@@ -28,6 +28,8 @@ class Animal:
 class Rhino(Animal):
     def run(self):
         print(f"Rhiono {self.name} can run")
+    def eat(self):
+        print(f"The {self.name}, is eating grass")        
 
 
 mini_rhino = Rhino(name="R1",breed="The whity")
