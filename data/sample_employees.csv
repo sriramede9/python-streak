@@ -1,0 +1,10 @@
+EmployeeID, Name         , Department , JobTitle                 , Location , Salary, StartDate , Manager      , Email                    , Notes
+      1001, Alice Johnson, Engineering, Software Engineer        , Toronto  ,  95000, 2023-01-15, David Lee    , alice.johnson@example.com, Promoted in 2025
+      1002, Bob Smith    , Sales      , Account Executive        , Vancouver,  82000, 2022-08-01,              , bob.smith@example.com    , 
+      1003, Carol Davis  , HR         ,                          , Montreal ,  68000, 2021-05-10, Susan White  , carol.davis@example.com  , Works remotely
+      1004,              , Marketing  , Marketing Specialist     , Calgary  ,  72000, 2024-02-20, Emily Brown  ,                          , New hire
+      1005, Ethan Wilson , Finance    , Financial Analyst        ,          ,  79000, 2020-11-03, Michael Green, ethan.wilson@example.com , 
+      1006, Fatima Khan  , Engineering, Data Scientist           , Toronto  ,       , 2023-09-18, David Lee    , fatima.khan@example.com  , Missing salary
+      1007, George Miller, Support    , Customer Support Rep     , Ottawa   ,  54000,           , Rachel Adams , george.miller@example.com, Missing start date
+          ,              ,            ,                          ,          ,       ,           ,              ,                          , 
+      1008, Hannah Chen  , Engineering, Machine Learning Engineer, Toronto  , 110000, 2022-03-14, David Lee    , hannah.chen@example.com  , Top performer
