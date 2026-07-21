@@ -40,3 +40,6 @@ df.loc[df['Value'].idxmax()]
 # who has the highest character count
 df['Char_Count'].max()
 df.loc[df['Char_Count'].idxmax()]
+
+# find df's whose value is equal to 41
+df[df["Value"] == 41]
