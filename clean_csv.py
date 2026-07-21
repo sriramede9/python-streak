@@ -28,6 +28,10 @@ print(df.iloc[-2])
 print("After:", len(df))
 
 
+# 1. FORCE the column names to strip spaces and overwrite 'df' permanently
+df.columns = df.columns.str.strip()
+
+print(df.iloc[1])
 # Fill missing text values
 text_columns = df.select_dtypes(include="object").columns
 df[text_columns] = df[text_columns].fillna("Unknown")
@@ -35,8 +39,7 @@ df[text_columns] = df[text_columns].fillna("Unknown")
 # Find all columns that hold numbers
 # Grabs numeric columns by stripping the headers and converting data on the fly
 
-# 1. FORCE the column names to strip spaces and overwrite 'df' permanently
-df.columns = df.columns.str.strip()
+
 
 # 2. Double-check what pandas actually sees right this millisecond
 print("Current columns available:", df.columns.tolist())
