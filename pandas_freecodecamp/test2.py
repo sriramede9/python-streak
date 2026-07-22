@@ -72,7 +72,6 @@ df.groupby(["country", "province"]).agg({
 # show countries that has more than 100 wineries
 
 df.groupby('country').filter(lambda x: x.winery.nunique() >100)
-df.groupby("country").filter(lambda x: x["winery"].nunique()
+df.groupby("country").filter(lambda x: x["winery"].nunique() > 100)
 
-df.groupby("country")["winery"].nunique()
- > 100)
+df.groupby("country")["winery"].nunique() > 100)

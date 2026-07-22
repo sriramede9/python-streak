@@ -1,0 +1,26 @@
+Level 1:
+groupby one column
+→ summarize
+
+country → average points
+
+
+Level 2:
+groupby multiple columns
+→ drill into dimensions
+
+country + province → average points
+
+
+Level 3:
+groupby + agg
+→ build reports
+
+country + province → score + price + count
+
+
+Level 4:
+groupby + transform/filter
+→ create insights
+
+"is this wine above its country's average?"
