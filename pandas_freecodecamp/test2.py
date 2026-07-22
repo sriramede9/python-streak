@@ -74,4 +74,4 @@ df.groupby(["country", "province"]).agg({
 df.groupby('country').filter(lambda x: x.winery.nunique() >100)
 df.groupby("country").filter(lambda x: x["winery"].nunique() > 100)
 
-df.groupby("country")["winery"].nunique() > 100)
+df.groupby("country")["winery"].nunique()
