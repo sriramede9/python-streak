@@ -77,5 +77,25 @@ for _, row in df.iterrows():
         f"Notes: {row['Notes']}."
     )
     documents.append(text)
+    
+# avoid for loop 
+
+# Strip all column names once at the top
+df.columns = df.columns.str.strip()
+
+# Combine entire columns instantly!
+df['document'] = (
+    df['Name'] + " works as a " + df['JobTitle'] + " in the " +
+    df['Department'] + " department in " + df['Location'] + ". " +
+    "Salary: " + df['Salary'].astype(str) + ". " +
+    "Started: " + df['StartDate'].astype(str) + ". " +
+    "Manager: " + df['Manager'].astype(str) + ". " +
+    "Email: " + df['Email'] + ". " +
+    "Notes: " + df['Notes'] + "."
+)
+
+# Pull the list of sentences out if needed
+documents = df['document'].tolist()
+
 
 print(documents[:len(documents)])
