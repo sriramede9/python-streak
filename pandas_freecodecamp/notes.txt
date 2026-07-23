@@ -24,3 +24,8 @@ groupby + transform/filter
 → create insights
 
 "is this wine above its country's average?"
+
+A good rule:
+After sorting/filtering and you care about the first N rows → use iloc
+After sorting/filtering and you want to preserve the original index meaning → use loc
+If the old index is now useless → reset_index(drop=True)
