@@ -43,7 +43,7 @@ df.price.fillna(value=df.price.median(), inplace=True)
 # Q7: Count how many unique wine varieties ('variety') exist in the dataset.
 # Your solution:
 
-len(df.variety.value_counts())
+df.variety.nunique()
 
 # Q8: Group by 'country' and filter out any countries that have fewer than 100 wines in the dataset.
 # Your solution:
@@ -54,11 +54,12 @@ df.groupby(by="country").filter(lambda x: x.winery.count() > 100)
 # and all other wines are labeled 'Standard'.
 # Your solution:
 
-def value_category_func(val):
-    return (val.points >= 95 and val.price < 20)
+condition = ((df.points >= 95) & (df.price < 20))
+
+np.where()
 
 
-df['value_category'] = np.where(value_category_func,'Great Value','Standard')
+df['value_category'] = np.where(condition,'Great Value','Standard')
 #df.value_category.head()
 # Q10: Find duplicate rows based on 'title' and 'winery', and remove them, keeping only the first occurrence.
 # How many total rows remain?
