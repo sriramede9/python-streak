@@ -56,9 +56,6 @@ df.groupby(by="country").filter(lambda x: x.winery.count() > 100)
 
 condition = ((df.points >= 95) & (df.price < 20))
 
-np.where()
-
-
 df['value_category'] = np.where(condition,'Great Value','Standard')
 #df.value_category.head()
 # Q10: Find duplicate rows based on 'title' and 'winery', and remove them, keeping only the first occurrence.
