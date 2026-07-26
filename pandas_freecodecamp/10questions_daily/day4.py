@@ -59,25 +59,11 @@ df['Genre'].str.split(",").explode().nunique()
 # Create One-Hot Encoded dummy columns for the top 5 most common primary genres.
 # Your solution:
 # 1. Get top 5 genre names
-top_5_genres = df['Genre'].str.split(',').explode().str.strip().value_counts().head(5).index
-
-# 2. Explode the entire series and clean up spaces
-exploded = df['Genre'].str.split(',').explode().str.strip()
-
-# 3. Filter: Keep ONLY rows where the genre is in top 5
-top_5_exploded = exploded[exploded.isin(top_5_genres)]
-
-print(top_5_exploded)
-
-dummies=pd.get_dummies(top_5_exploded)
-type(dummies)
-grouped_dummies=dummies.groupby(level=0).sum()
-# Drop whatever columns are in top_5_most_genres.index
-df = df.drop(columns=top_5_genres, errors='ignore')
-
-df=df.join(grouped_dummies)
-df.head(1)
-
+dummies = df['Genre'].str.replace(r'\s*,\s*', ',', regex=True).str.get_dummies(',')
+dummies.head()
+top_5_genres = dummies.sum().nlargest(5).index
+df=df.join(dummies[top_5_genres])
+df.head()
 # so the above guy exploded into let's say first row has 
 #Action,Adventure,Sci-Fi
 

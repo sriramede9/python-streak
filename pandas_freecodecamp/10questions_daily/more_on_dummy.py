@@ -46,26 +46,13 @@ print("\n" + "=" * 60 + "\n")
 # 2. Keep those top 2, but label all other genres as 'Other'.
 # 3. One-hot encode the column using pd.get_dummies(..., dtype=int).
 
-top_2_most_frequent_genres_index = df["primary_genre"].value_counts().head(2).index
-
-print(top_2_most_frequent_genres_index)
-
-# wow remember there is something but forgot where is the one had to google it
+top_2 = df["primary_genre"].value_counts().head(2).index
 
 df["primary_genre"] = np.where(
-    df["primary_genre"].isin(top_2_most_frequent_genres_index),
-    df["primary_genre"],
-    "OTHER",
+    df["primary_genre"].isin(top_2), df["primary_genre"], "OTHER"
 )
 
-# df.primary_genre.str.replace(pat=())
-
-mathing_dummy_prep = df["primary_genre"].isin(top_2_most_frequent_genres_index)
-
 df = df.join(pd.get_dummies(df["primary_genre"], dtype=int))
-
-# those that are true are 1 and False are other.
-
 df_c1 = df.copy()
 
 # --- YOUR CODE HERE ---
@@ -102,16 +89,15 @@ df_c2 = df.copy()
 df.tags.str.get_dummies("|")
 
 # approach 2
-explode_values = df.tags.str.split("|").explode()
+dummy_table = pd.get_dummies(df.tags.str.split("|").explode(), dtype=int)
 
+final_table = dummy_table.groupby(level=0).sum()
 
-pd.get_dummies(explode_values).groupby(level=0).sum()
-
-
+df = df.join(final_table)
 # ----------------------
 
 print("--- CHALLENGE 2 RESULT ---")
-# print(df_c2)
+print(df_c2)
 
 """
 EXPECTED OUTPUT SUMMARY:
@@ -131,8 +117,11 @@ print("\n" + "=" * 60 + "\n")
 df_c3 = df.copy()
 
 # --- YOUR CODE HERE ---
+# use normalize approach
 
-
+genre_proportions = df["primary_genre"].value_counts(normalize=True)
+df_c3["genre_frequency"] = df_c3["primary_genre"].map(genre_proportions)
+df_c3["genre_frequency"].head(10)
 # ----------------------
 
 print("--- CHALLENGE 3 RESULT ---")
