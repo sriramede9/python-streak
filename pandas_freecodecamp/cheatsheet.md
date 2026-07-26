@@ -1,6 +1,6 @@
 # Pandas Core Concepts & Method Cheatsheet
 
-A concise reference guide covering data selection, filtering, aggregation, string manipulation, and reshaping based on practical Pandas exercises.
+A concise reference guide covering data selection, filtering, aggregation, string manipulation, reshaping, and feature encoding based on practical Pandas exercises.
 
 ---
 
@@ -104,7 +104,7 @@ df.drop_duplicates(subset=["title", "winery"], keep="first")
 
 ---
 
-## 6. String Operations (`.str`)
+## 6. String Operations (`.str`) & Multi-Label Splitting
 
 ```python
 # Substring search (Case-insensitive)
@@ -118,11 +118,14 @@ df[df["designation"].str.contains("Reserve|Selection", case=False, na=False)]
 
 # Text replacement
 df["country"] = df["country"].str.replace("US", "United States", regex=False)
+
+# Multi-label string splitting & counting unique items across all rows
+df['Genre'].str.split(",").explode().nunique()
 ```
 
 ---
 
-## 7. Reshaping & Binning
+## 7. Reshaping, Binning & Categorical Encoding
 
 ### Binning Continuous Data with `pd.cut()`
 ```python
@@ -139,3 +142,26 @@ pivot = df.pivot_table(
     index="country", columns="points", values="price", aggfunc="mean"
 )
 ```
+
+### Multi-Label Exploding & One-Hot Dummy Encoding
+When turning a delimited string column (e.g., `"Action,Adventure,Sci-Fi"`) into separate binary dummy columns for the **top $N$ categories**:
+
+```python
+# 1. Split strings, explode into separate rows, and strip whitespace
+exploded = df['Genre'].str.split(',').explode().str.strip()
+
+# 2. Get top 5 most common categories
+top_5_genres = exploded.value_counts().head(5).index
+
+# 3. Filter exploded series for top 5 only and generate dummy variables
+top_5_exploded = exploded[exploded.isin(top_5_genres)]
+dummies = pd.get_dummies(top_5_exploded)
+
+# 4. Collapse exploded rows back to original DataFrame index using level=0
+grouped_dummies = dummies.groupby(level=0).sum()
+
+# 5. Drop existing conflicting columns (if any) and join back to original DataFrame
+df = df.drop(columns=top_5_genres, errors='ignore').join(grouped_dummies)
+```
+
+> ⚠️ **Key Gotcha on `.explode()`:** `.explode()` preserves original index labels across multiple rows. To aggregate dummy encoded features back to individual original rows, group by index level using `.groupby(level=0).sum()`.
