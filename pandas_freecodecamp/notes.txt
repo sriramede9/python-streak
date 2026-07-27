@@ -29,3 +29,24 @@ A good rule:
 After sorting/filtering and you care about the first N rows → use iloc
 After sorting/filtering and you want to preserve the original index meaning → use loc
 If the old index is now useless → reset_index(drop=True)
+
+
+Tomorrow Question:
+
+give me pandas exercise usefull as someone trying to becoma AI engineer.
+trying to wrap head around dummies, map , transform , normalize , 1-0 matrix 
+
+for an AI engineer
+
+I really want to revise my skills
+
+give me 5 questions and once answered next 5 till we are in good hands with pandas.
+
+i learned upto map, dummies , group by, sort , transform , nlargest,nsmallest , value_coutnts(normalize) , nunique,filter
+
+this is my one week of pandas
+
+so I really want to test my understanding and also get comfortable upto this so that I can plan my next steps
+
+how's the plan? 
+

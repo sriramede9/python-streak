@@ -1,6 +1,6 @@
 # Pandas Core Concepts & Method Cheatsheet
 
-A concise reference guide covering data selection, filtering, aggregation, string manipulation, reshaping, and feature encoding based on practical Pandas exercises.
+A concise reference guide covering data selection, filtering, aggregation, string manipulation, reshaping, and categorical feature encoding based on practical Pandas exercises.
 
 ---
 
@@ -104,7 +104,7 @@ df.drop_duplicates(subset=["title", "winery"], keep="first")
 
 ---
 
-## 6. String Operations (`.str`) & Multi-Label Splitting
+## 6. String Operations (`.str`)
 
 ```python
 # Substring search (Case-insensitive)
@@ -119,13 +119,68 @@ df[df["designation"].str.contains("Reserve|Selection", case=False, na=False)]
 # Text replacement
 df["country"] = df["country"].str.replace("US", "United States", regex=False)
 
-# Multi-label string splitting & counting unique items across all rows
-df['Genre'].str.split(",").explode().nunique()
+# Count unique tokens across delimited strings
+df["tags"].str.split("|").explode().nunique()
 ```
 
 ---
 
-## 7. Reshaping, Binning & Categorical Encoding
+## 7. Categorical Feature Encoding Patterns
+
+### Pattern A: "Top N + Other" Bucketing & One-Hot Encoding
+Keep high-frequency categories and group rare values into an `"OTHER"` category to avoid dimension explosion before one-hot encoding.
+
+```python
+# 1. Identify top N categories
+top_2 = df["primary_genre"].value_counts().head(2).index
+
+# 2. Replace non-top categories with 'OTHER'
+df["primary_genre"] = np.where(
+    df["primary_genre"].isin(top_2), df["primary_genre"], "OTHER"
+)
+
+# 3. One-hot encode with integer output
+df = df.join(pd.get_dummies(df["primary_genre"], dtype=int))
+```
+
+### Pattern B: Delimited Multi-Value String Encoding
+When a single column contains multiple categories joined by a delimiter (e.g., `"Action|Sci-Fi"`):
+
+#### Option 1: Native `.str.get_dummies()` (Cleanest & fastest)
+```python
+# Directly generates binary 1/0 columns for each delimited tag
+tag_dummies = df["tags"].str.get_dummies(sep="|")
+df = df.join(tag_dummies)
+```
+
+#### Option 2: `.explode()` + `pd.get_dummies()` (Ideal when filtering top N categories first)
+```python
+# Explode -> get dummies -> collapse back to original row index
+exploded = df["tags"].str.split("|").explode().str.strip()
+dummies = pd.get_dummies(exploded, dtype=int)
+grouped_dummies = dummies.groupby(level=0).sum()
+
+df = df.join(grouped_dummies)
+```
+
+> ⚠️ **Key Gotcha on `.explode()`:** `.explode()` preserves original row index labels across multiple split rows. To collapse dummy-encoded exploded rows back to individual original rows, group by index level using `.groupby(level=0).sum()`.
+
+### Pattern C: Frequency / Count Encoding
+Replace categorical text values with their relative proportion (or raw frequency count) in the dataset to convert high-cardinality text into a single continuous numerical feature without introducing extra dummy columns.
+
+```python
+# Map category proportions (0.0 to 1.0) to rows
+genre_proportions = df["primary_genre"].value_counts(normalize=True)
+df["genre_frequency"] = df["primary_genre"].map(genre_proportions)
+
+# For raw count encoding instead:
+genre_counts = df["primary_genre"].value_counts()
+df["genre_count"] = df["primary_genre"].map(genre_counts)
+```
+
+---
+
+## 8. Reshaping & Binning
 
 ### Binning Continuous Data with `pd.cut()`
 ```python
@@ -142,26 +197,3 @@ pivot = df.pivot_table(
     index="country", columns="points", values="price", aggfunc="mean"
 )
 ```
-
-### Multi-Label Exploding & One-Hot Dummy Encoding
-When turning a delimited string column (e.g., `"Action,Adventure,Sci-Fi"`) into separate binary dummy columns for the **top $N$ categories**:
-
-```python
-# 1. Split strings, explode into separate rows, and strip whitespace
-exploded = df['Genre'].str.split(',').explode().str.strip()
-
-# 2. Get top 5 most common categories
-top_5_genres = exploded.value_counts().head(5).index
-
-# 3. Filter exploded series for top 5 only and generate dummy variables
-top_5_exploded = exploded[exploded.isin(top_5_genres)]
-dummies = pd.get_dummies(top_5_exploded)
-
-# 4. Collapse exploded rows back to original DataFrame index using level=0
-grouped_dummies = dummies.groupby(level=0).sum()
-
-# 5. Drop existing conflicting columns (if any) and join back to original DataFrame
-df = df.drop(columns=top_5_genres, errors='ignore').join(grouped_dummies)
-```
-
-> ⚠️ **Key Gotcha on `.explode()`:** `.explode()` preserves original index labels across multiple rows. To aggregate dummy encoded features back to individual original rows, group by index level using `.groupby(level=0).sum()`.

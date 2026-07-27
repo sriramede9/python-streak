@@ -50,6 +50,19 @@ for idx, (doc, dist) in enumerate(zip(retrieved_docs, distances)):
     print(f"Rank {idx + 1} [Distance: {dist:.4f}]: {doc}")
 print("=" * 30 + "\n")
 
+user_query2="Tell me about healthcare infrastructure timelines"
+results2=collection.query(query_texts=[user_query2],n_results=top_k)
+
+for index,(doc,dist) in enumerate(zip(results2["documents"][0],results2["distances"][0])):
+    print(f"Rank {index+1} [Distance :{dist:.4f}]: {doc}")
+
+user_query3="why does it rain in winter in Australia?"    
+
+results3=collection.query(query_texts=[user_query3],n_results=top_k)
+
+for index , (doc,distance) in enumerate(zip(results3["documents"][0],results3["distances"][0])):
+    print(f" Rank : {index+1} Distance : {distance:.4f} and {doc}")
+
 # -------------------------------------------------------------------
 # STEP 4: PROMPT SYNTHESIS
 # -------------------------------------------------------------------
