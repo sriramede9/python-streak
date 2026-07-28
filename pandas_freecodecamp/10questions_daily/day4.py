@@ -64,6 +64,8 @@ dummies.head()
 top_5_genres = dummies.sum().nlargest(5).index
 df=df.join(dummies[top_5_genres])
 df.head()
+
+# 
 # so the above guy exploded into let's say first row has 
 #Action,Adventure,Sci-Fi
 
@@ -79,26 +81,46 @@ df.head()
 # when you group by level 0 , they are staying together as group
 
 
+# the other way to intepret primary genre is first element in each movie
 
+primary_genre = df['Genre'].str.split(',').str[0].str.strip()
+top_5_pg = primary_genre.value_counts().head(5).index
+# our labels are ['Action', 'Drama', 'Comedy', 'Adventure', 'Crime']
 
+initial_pg_dummies=pd.get_dummies(primary_genre,dtype=int)
+
+top_5_dummies=initial_pg_dummies.reindex(columns=top_5_pg,fill_value=0)
+# now join them back
 # Q7 [Outlier Removal / Pruning]:
 # Filter the dataset to keep only movies where 'Runtime (Minutes)' is within 2 standard deviations of the mean runtime.
 # (Formula: mean - 2*std <= runtime <= mean + 2*std)
 # Your solution:
 
+df.head()
 
+mean_runtime = df['Runtime (Minutes)'].mean()
+std_runtime = df['Runtime (Minutes)'].std()
+
+lower = mean_runtime - (2 * std_runtime)
+upper = mean_runtime + (2 * std_runtime)
+
+# Direct filtering
+df_filtered = df[(df['Runtime (Minutes)'] >= lower) & (df['Runtime (Minutes)'] <= upper)]
 # Q8 [Training Quality Thresholding]:
 # Filter for movies that have BOTH 'Rating' >= 8.0 AND 'Votes' >= 100,000 to construct a high-quality fine-tuning set.
 # How many rows qualify?
 # Your solution:
 
+len(df[(df['Rating'] >= 8.0) & (df['Votes'] >= 100_000)  ]['Title'])
 
 # Q9 [Batch Processing Simulation]:
 # Split the DataFrame into chunks of 100 rows each and store them in a list of DataFrames called 'batches'.
 # Your solution:
-
+chunk_size = 500
+batches =  [ df[i,i+chunk_size] for i in  range(0,len(df),chunk_size)]
 
 # Q10 [Vector DB Payload Construction]:
 # Convert the top 5 rows of the DataFrame into a list of Python dictionaries formatted for API payload ingestion:
 # [{'id': Rank, 'text': rag_document, 'metadata': {'rating': Rating, 'year': Year}}]
 # Your solution:
+df.head().to_dict()
