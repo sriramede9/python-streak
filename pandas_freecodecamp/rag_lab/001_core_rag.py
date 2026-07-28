@@ -16,6 +16,7 @@ collection = client.create_collection(
     name="rag_foundation", embedding_function=embedding_fn
 )
 
+
 # -------------------------------------------------------------------
 # STEP 2: DOCUMENT INGESTION (RAW TEXT TO VECTORS)
 # -------------------------------------------------------------------

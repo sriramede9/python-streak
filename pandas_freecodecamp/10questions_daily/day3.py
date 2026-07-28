@@ -37,6 +37,7 @@ df["point_tier"] = pd.cut(
 # Your solution:
 df.point_tier.value_counts()
 
+
 # Q6: Find all rows where the 'designation' column contains the word "Reserve" or "Selection" (case-insensitive).
 # Your solution:
 
@@ -69,3 +70,12 @@ df["country"] = df.country.str.replace(pat="US", repl="Stupid States")
 # Your solution:
 
 df.loc[df.groupby("country").price.nlargest(3).index.get_level_values(1)]["title"]
+
+# sort multiple columns 
+
+df.sort_values(['country','province'],ascending=[True,False])
+
+# transform
+
+mask=df.groupby('country')['province'].transform(lambda x: len(x)>10005)
+df[mask]
