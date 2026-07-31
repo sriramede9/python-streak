@@ -95,9 +95,19 @@ df = pd.get_dummies(
 # Shuffle the DataFrame deterministically using `sample(frac=1, random_state=42)`.
 # Then, split it into an 80% training set (`train_df`) and a 20% validation set (`val_df`).
 # Your solution:
+shuffled_df = df.sample(frac=1, random_state=42)
 
+split_index = int(len(shuffled_df) * 0.8)
+
+train_df = shuffled_df.iloc[:split_index]
+val_df = shuffled_df.iloc[split_index:]
 
 # Q10 [ML Feature Matrix Export]:
 # Drop non-predictive columns ('PassengerId', 'Name', 'Ticket', 'Cabin') and ensure all remaining columns
 # are purely numerical. Convert the final DataFrame into a 2D NumPy array `X` ready for model input.
 # Your solution:
+df=df.drop(columns=['PassengerId', 'Name', 'Ticket', 'Cabin','Embarked','title','age_group'])
+df.dtypes.value_counts()
+df.head()
+
+x = df.to_numpy()
