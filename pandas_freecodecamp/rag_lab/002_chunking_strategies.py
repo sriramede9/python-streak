@@ -96,7 +96,7 @@ for i, c in enumerate(fixed_chunks[:3]):
     print(f"Chunk {i+1} ({len(c)} chars): {repr(c)}")
 
 print("\n=== 2. RECURSIVE CHUNKS ===")
-rec_chunks = recursive_character_chunking(sample_doc, chunk_size=200, overlap=30)
+rec_chunks = recursive_character_chunking(sample_doc, chunk_size=375, overlap=25)
 for i, c in enumerate(rec_chunks[:3]):
     print(f"Chunk {i+1} ({len(c)} chars): {repr(c)}")
 
@@ -114,9 +114,19 @@ collection.add(
 )
 
 query = "When is the Trillium hospital expansion expected to open?"
-res = collection.query(query_texts=[query], n_results=1)
+res = collection.query(query_texts=[query], n_results=5)
 
 print("\n=== 3. RETRIEVAL WITH RECURSIVE CHUNKS ===")
 print(f"Query: {query}")
 print(f"Top Retrieved Chunk: {res['documents'][0][0]}")
 print(f"Distance Score: {res['distances'][0][0]:.4f}")
+
+
+for i, chunk in enumerate(rec_chunks):
+    print("=" * 60)
+    print(f"Chunk {i}")
+    print(chunk)
+#==============
+
+for index , (doc,distance) in enumerate(zip(res["documents"][0],res["distances"][0])):
+    print(f" Rank : {index+1} Distance : {distance:.4f} and {doc}")

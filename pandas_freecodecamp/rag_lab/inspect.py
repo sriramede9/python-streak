@@ -2,7 +2,7 @@ import chromadb
 
 client = chromadb.Client()
 
-collection = client.get_collection("rag_foundation")
+collection = client.get_collection("episode_002_chunks")
 
 print("Documents:", collection.count())
 
