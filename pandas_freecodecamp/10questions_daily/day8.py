@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+from sklearn.model_selection import train_test_split
+
 
 # Dataset: E-Commerce Women's Clothing Reviews (Text reviews, ratings, recommendations, sentiment features)
 url = "https://raw.githubusercontent.com/AFAgarap/ecommerce-reviews-analysis/refs/heads/master/Womens%20Clothing%20E-Commerce%20Reviews.csv"
@@ -42,7 +44,11 @@ clean_reviews_df["word_count"] = clean_reviews_df["Review Text"].str.split().str
 # Task: Create a column 'normalized_review' where all text in 'Review Text' is lowercased and all non-alphanumeric characters (except spaces) are removed.
 # Your solution:
 
-clean_reviews_df["normalized_review"] = clean_reviews_df['Review Text'].str.lower().replace(to_replace=r'[^a-zA-Z0-9\s]',value='',regex=True)
+clean_reviews_df["normalized_review"] = (
+    clean_reviews_df["Review Text"]
+    .str.lower()
+    .replace(to_replace=r"[^a-zA-Z0-9\s]", value="", regex=True)
+)
 
 # Q4 [Binary Target Encoding]:
 # Context: Binary classification models predict whether a customer would recommend a product based on review content.
@@ -51,8 +57,8 @@ clean_reviews_df["normalized_review"] = clean_reviews_df['Review Text'].str.lowe
 # Task: Create a binary target column 'is_positive' where 'Rating' >= 4 is labeled 1, and 'Rating' < 4 is labeled 0.
 # Your solution:
 
-condition_rating = clean_reviews_df['Rating'] >=4
-clean_reviews_df["is_positive"] = np.where(condition_rating,1,0)
+condition_rating = clean_reviews_df["Rating"] >= 4
+clean_reviews_df["is_positive"] = np.where(condition_rating, 1, 0)
 
 
 # Q5 [High-Cardinality Categorical Imputation & Mapping]:
@@ -61,10 +67,9 @@ clean_reviews_df["is_positive"] = np.where(condition_rating,1,0)
 # Expected Skill: .fillna() on categorical text columns.
 # Task: Fill missing values in 'Department Name' and 'Class Name' with the string 'Unassigned'.
 # Your solution:
-clean_reviews_df[['Department Name', 'Class Name']] = (
-    clean_reviews_df[['Department Name', 'Class Name']]
-        .fillna('Unassigned')
-)
+clean_reviews_df[["Department Name", "Class Name"]] = clean_reviews_df[
+    ["Department Name", "Class Name"]
+].fillna("Unassigned")
 # Q6 [Outlier Removal - Length-Based Sample Filtering]:
 # Context: Transformer models (like BERT) have fixed token limits (e.g., 512 tokens). Extreme text outliers waste compute or get truncated.
 # Business/ML Purpose: Filter training samples to a stable context window size.
@@ -75,9 +80,11 @@ clean_reviews_df[['Department Name', 'Class Name']] = (
 # wow between and quantile beatiful words
 
 # clean_reviews_df['word_count'].quantile(q=0.95)
-lower = clean_reviews_df['word_count'].quantile(q=0.05)
-upper = clean_reviews_df['word_count'].quantile(q=0.95)
-clean_reviews_df=clean_reviews_df[clean_reviews_df['word_count'].between(lower,upper)]
+lower = clean_reviews_df["word_count"].quantile(q=0.05)
+upper = clean_reviews_df["word_count"].quantile(q=0.95)
+clean_reviews_df = clean_reviews_df[
+    clean_reviews_df["word_count"].between(lower, upper)
+]
 
 # Q7 [Text Feature Extraction - Domain Keyword Flagging]:
 # Context: Specific domain terms (e.g., fit issues like 'small', 'large', 'tight', 'loose') serve as key signals for e-commerce sentiment.
@@ -85,7 +92,13 @@ clean_reviews_df=clean_reviews_df[clean_reviews_df['word_count'].between(lower,u
 # Expected Skill: String pattern matching with .str.contains().
 # Task: Create a binary column 'has_fit_issue' that is 1 if 'normalized_review' contains any of the words ('small', 'large', 'tight', 'loose'), and 0 otherwise.
 # Your solution:
-clean_reviews_df['has_fit_issue'] = pd.get_dummies(clean_reviews_df['normalized_review'].str.contains(pat=r'(small|large|tight|loose)',case=False),dtype=int,drop_first=True)
+clean_reviews_df["has_fit_issue"] = pd.get_dummies(
+    clean_reviews_df["normalized_review"].str.contains(
+        pat=r"(small|large|tight|loose)", case=False
+    ),
+    dtype=int,
+    drop_first=True,
+)
 # Q8 [One-Hot Encoding with Reference Dropping]:
 # Context: Categorical metadata ('Department Name') provides key structural context when combined with text embeddings.
 # Business/ML Purpose: One-hot encode categorical features while avoiding collinearity (dummy variable trap).
@@ -93,12 +106,8 @@ clean_reviews_df['has_fit_issue'] = pd.get_dummies(clean_reviews_df['normalized_
 # Task: Generate one-hot encoded dummy variables for 'Department Name' with `drop_first=True` and concat them back to the main DataFrame.
 # Your solution:
 
-clean_reviews_df['Department Name']
 pd.get_dummies(
-    clean_reviews_df,
-    columns=['Department Name'],
-    drop_first=True,
-    dtype=int
+    clean_reviews_df, columns=["Department Name"], drop_first=True, dtype=int
 )
 
 # Q9 [Stratified Train/Validation Partitioning]:
@@ -109,9 +118,46 @@ pd.get_dummies(
 # Your solution:
 
 
+train_df, val_df = train_test_split(
+    clean_reviews_df,
+    test_size=0.2,
+    stratify=clean_reviews_df["is_positive"],
+    random_state=42,
+)
 # Q10 [Tabular ML Feature Matrix Export]:
 # Context: Preprocessing output must be exported as pure float32 NumPy arrays ready for XGBoost or PyTorch models.
 # Business/ML Purpose: Isolate numerical features and target labels into clean arrays, checking for any remaining NaNs.
 # Expected Skill: Feature column selection, verification with .isna().sum(), and .to_numpy(dtype=np.float32).
 # Task: Select features ['Age', 'Positive Feedback Count', 'char_count', 'word_count', 'has_fit_issue'], verify zero nulls, and convert to 2D float32 array `X` and 1D array `y` ('is_positive').
 # Your solution:
+clean_reviews_df.info()
+
+features = [
+    'Age',
+    'Positive Feedback Count',
+    'char_count',
+    'word_count',
+    'has_fit_issue'
+]
+
+assert (
+    clean_reviews_df[features]
+        .isna()
+        .sum()
+        .sum()
+    == 0
+),"Features still contain missing values!"
+
+clean_reviews_df[
+    ["Age", "Positive Feedback Count", "char_count", "word_count", "has_fit_issue"]
+].isna().sum()
+# Age                        0
+# Positive Feedback Count    0
+# char_count                 0
+# word_count                 0
+# has_fit_issue              0
+# dtype: int64
+x = clean_reviews_df[
+    ["Age", "Positive Feedback Count", "char_count", "word_count", "has_fit_issue"]
+].to_numpy(dtype="float32")
+y = clean_reviews_df["is_positive"].to_numpy()
