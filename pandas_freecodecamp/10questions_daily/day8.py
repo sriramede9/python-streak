@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 # Dataset: E-Commerce Women's Clothing Reviews (Text reviews, ratings, recommendations, sentiment features)
-url = "https://raw.githubusercontent.com/raghavan-s/Womens-E-Commerce-Clothing-Reviews/master/Womens%20Clothing%20E-Commerce%20Reviews.csv"
+url = "https://raw.githubusercontent.com/AFAgarap/ecommerce-reviews-analysis/refs/heads/master/Womens%20Clothing%20E-Commerce%20Reviews.csv"
 
 df = pd.read_csv(url)
 
@@ -17,7 +17,14 @@ df = pd.read_csv(url)
 # Task: Drop rows where 'Review Text' is missing (NaN) or contains only blank spaces. Store in `clean_reviews_df`.
 # Your solution:
 
+clean_reviews_df = df.copy()
 
+clean_reviews_df["Review Text"] = clean_reviews_df["Review Text"].replace(
+    r"^\s*$", np.nan, regex=True
+)
+
+clean_reviews_df = clean_reviews_df.dropna(subset=["Review Text"])
+df.info()
 # Q2 [Text Feature Engineering - Word & Character Metrics]:
 # Context: Text length features are strong signals for detecting spam, bot-generated reviews, or low-quality training samples.
 # Business/ML Purpose: Engineer auxiliary numerical features alongside text for hybrid multimodal architectures.
@@ -25,6 +32,8 @@ df = pd.read_csv(url)
 # Task: Create two columns in `clean_reviews_df`: 'char_count' (total characters) and 'word_count' (total words) from 'Review Text'.
 # Your solution:
 
+clean_reviews_df["char_count"] = clean_reviews_df["Review Text"].str.len()
+clean_reviews_df["word_count"] = clean_reviews_df["Review Text"].str.split().str.len()
 
 # Q3 [Text Normalization & Token Hygiene]:
 # Context: Raw user reviews contain inconsistent casing, punctuation, and special characters that clutter vocabulary dictionaries.
@@ -33,6 +42,7 @@ df = pd.read_csv(url)
 # Task: Create a column 'normalized_review' where all text in 'Review Text' is lowercased and all non-alphanumeric characters (except spaces) are removed.
 # Your solution:
 
+clean_reviews_df["normalized_review"] = clean_reviews_df['Review Text'].str.lower().replace(to_replace=r'[^a-zA-Z0-9\s]',value='',regex=True)
 
 # Q4 [Binary Target Encoding]:
 # Context: Binary classification models predict whether a customer would recommend a product based on review content.
@@ -41,6 +51,9 @@ df = pd.read_csv(url)
 # Task: Create a binary target column 'is_positive' where 'Rating' >= 4 is labeled 1, and 'Rating' < 4 is labeled 0.
 # Your solution:
 
+condition_rating = clean_reviews_df['Rating'] >=4
+clean_reviews_df["is_positive"] = np.where(condition_rating,1,0)
+
 
 # Q5 [High-Cardinality Categorical Imputation & Mapping]:
 # Context: Missing department names in product catalogs cause pipeline errors during categorical encoding.
@@ -48,8 +61,10 @@ df = pd.read_csv(url)
 # Expected Skill: .fillna() on categorical text columns.
 # Task: Fill missing values in 'Department Name' and 'Class Name' with the string 'Unassigned'.
 # Your solution:
-
-
+clean_reviews_df[['Department Name', 'Class Name']] = (
+    clean_reviews_df[['Department Name', 'Class Name']]
+        .fillna('Unassigned')
+)
 # Q6 [Outlier Removal - Length-Based Sample Filtering]:
 # Context: Transformer models (like BERT) have fixed token limits (e.g., 512 tokens). Extreme text outliers waste compute or get truncated.
 # Business/ML Purpose: Filter training samples to a stable context window size.
@@ -57,6 +72,12 @@ df = pd.read_csv(url)
 # Task: Filter `clean_reviews_df` to keep only rows where 'word_count' is between the 5th percentile and 95th percentile of the dataset.
 # Your solution:
 
+# wow between and quantile beatiful words
+
+# clean_reviews_df['word_count'].quantile(q=0.95)
+lower = clean_reviews_df['word_count'].quantile(q=0.05)
+upper = clean_reviews_df['word_count'].quantile(q=0.95)
+clean_reviews_df=clean_reviews_df[clean_reviews_df['word_count'].between(lower,upper)]
 
 # Q7 [Text Feature Extraction - Domain Keyword Flagging]:
 # Context: Specific domain terms (e.g., fit issues like 'small', 'large', 'tight', 'loose') serve as key signals for e-commerce sentiment.
@@ -64,8 +85,7 @@ df = pd.read_csv(url)
 # Expected Skill: String pattern matching with .str.contains().
 # Task: Create a binary column 'has_fit_issue' that is 1 if 'normalized_review' contains any of the words ('small', 'large', 'tight', 'loose'), and 0 otherwise.
 # Your solution:
-
-
+clean_reviews_df['has_fit_issue'] = pd.get_dummies(clean_reviews_df['normalized_review'].str.contains(pat=r'(small|large|tight|loose)',case=False),dtype=int,drop_first=True)
 # Q8 [One-Hot Encoding with Reference Dropping]:
 # Context: Categorical metadata ('Department Name') provides key structural context when combined with text embeddings.
 # Business/ML Purpose: One-hot encode categorical features while avoiding collinearity (dummy variable trap).
@@ -73,6 +93,13 @@ df = pd.read_csv(url)
 # Task: Generate one-hot encoded dummy variables for 'Department Name' with `drop_first=True` and concat them back to the main DataFrame.
 # Your solution:
 
+clean_reviews_df['Department Name']
+pd.get_dummies(
+    clean_reviews_df,
+    columns=['Department Name'],
+    drop_first=True,
+    dtype=int
+)
 
 # Q9 [Stratified Train/Validation Partitioning]:
 # Context: Imbalanced classification targets require stratified splits so train and validation sets maintain identical class distributions.
@@ -88,4 +115,3 @@ df = pd.read_csv(url)
 # Expected Skill: Feature column selection, verification with .isna().sum(), and .to_numpy(dtype=np.float32).
 # Task: Select features ['Age', 'Positive Feedback Count', 'char_count', 'word_count', 'has_fit_issue'], verify zero nulls, and convert to 2D float32 array `X` and 1D array `y` ('is_positive').
 # Your solution:
-
