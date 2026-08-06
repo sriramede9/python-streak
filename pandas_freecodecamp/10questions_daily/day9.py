@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 # Dataset: Synthetic AI Assistant Interaction & Prompt Engineering Logs
 # Simulating production telemetry from an LLM serving pipeline
@@ -39,7 +40,7 @@ df = pd.DataFrame({
 # Expected Skill: Vectorized regex replacement (.str.replace) with regular expressions.
 # Task: Create 'clean_prompt' by replacing all email addresses (`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b`) with '[EMAIL_MASKED]' and card patterns (`\d{4}-\d{4}-\d{4}-\d{4}`) with '[CARD_MASKED]'.
 # Your solution:
-
+df['clean_prompt'] = df['user_prompt'].str.replace(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}','[EMAIL_MASKED]',regex=True).str.replace(r'\d{4}-\d{4}-\d{4}-\d{4}','[CARD_MASKED]',regex=True)
 
 # Q2 [Heuristic Token Estimation Feature Engineering]:
 # Context: Serving LLMs costs money per token. Estimating token counts locally before sending API calls reduces latency/cost.
@@ -47,7 +48,8 @@ df = pd.DataFrame({
 # Expected Skill: Vectorized string length calculation (.str.len()) and integer division.
 # Task: Create two columns: 'est_input_tokens' (`clean_prompt` char length // 4) and 'est_output_tokens' (`system_response` char length // 4).
 # Your solution:
-
+df['est_input_tokens'] = df['clean_prompt'].str.len()/4
+df['est_output_tokens'] = df['clean_prompt'].str.len()/4
 
 # Q3 [Handling Null Model Responses & Failed Invocations]:
 # Context: LLM API timeouts or guardrail blocks lead to missing (NaN) model responses in telemetry.
@@ -55,6 +57,12 @@ df = pd.DataFrame({
 # Expected Skill: .dropna() targeting specific text columns and filtering blank whitespace strings.
 # Task: Drop rows where 'system_response' is null OR 'clean_prompt' consists only of empty whitespace.
 # Your solution:
+
+df.dropna(subset='system_response',inplace=True)
+condition= df['clean_prompt'].str.contains(r'^\s*$',regex=True)
+df.loc[condition, 'clean_prompt'] = np.nan
+df.dropna(subset='clean_prompt',inplace=True)
+df.info()
 
 
 # Q4 [Latency Outlier Truncation / Capping]:
@@ -64,7 +72,11 @@ df = pd.DataFrame({
 # Task: Calculate the 99th percentile of 'latency_ms'. Create 'latency_ms_capped' where any value exceeding the 99th percentile is set to the 99th percentile value.
 # Your solution:
 
-
+latency_ms_99_percentile = float(df['latency_ms'].quantile(0.99))
+df['latency_ms_capped'] =df['latency_ms']
+condition_latency = df['latency_ms_capped'] > latency_ms_99_percentile
+df.loc[condition_latency,'latency_ms_capped'] = latency_ms_99_percentile
+df.head()
 # Q5 [Binary Quality Label Construction]:
 # Context: Fine-tuning alignment models (DPO / RLHF) requires clear binary preference signals.
 # Business/ML Purpose: Convert noisy 1-5 star user feedback into a clean binary target (1 = High Quality, 0 = Low Quality).
@@ -72,7 +84,11 @@ df = pd.DataFrame({
 # Task: Create a target column 'is_high_quality' where 'user_rating' >= 4 is 1, 'user_rating' <= 2 is 0, and unrated (NaN) rows are assigned 0.
 # Your solution:
 
+condition_is_high_quality = df['user_rating'] >=4
 
+df['is_high_quality']=np.where(condition_is_high_quality,1,0)
+df['is_high_quality'].value_counts()
+df.info()
 # Q6 [Context Window Formatting for Vector Database Chunking]:
 # Context: RAG embedding pipelines require structured prompt-response blocks formatted into standardized text blocks.
 # Business/ML Purpose: Combine user input and model output into a single context document for embedding ingestion.
@@ -80,6 +96,7 @@ df = pd.DataFrame({
 # Task: Create a new column 'rag_chunk' with the format: "User: " + clean_prompt + " | Assistant: " + system_response.
 # Your solution:
 
+df['rag_chunk'] = "User: " + df['clean_prompt'] + " | Assistant: " + df['system_response'] +"."
 
 # Q7 [Categorical Encoding for Model Routing]:
 # Context: Different LLM backends ('model_name') have distinct performance profiles requiring categorical encoding.
@@ -88,6 +105,8 @@ df = pd.DataFrame({
 # Task: Generate one-hot encoded columns for 'model_name' with prefix 'model', keeping all dummy columns (no drop_first).
 # Your solution:
 
+df=pd.get_dummies(data=df,prefix='model',columns=['model_name'],dtype=int)
+df.info()
 
 # Q8 [Min-Max Scaling on Token & Latency Features]:
 # Context: Combining token counts and latency metrics into tabular classifiers requires normalized input scales [0, 1].
@@ -96,7 +115,17 @@ df = pd.DataFrame({
 # Task: Scale 'est_input_tokens' and 'latency_ms_capped' to a [0, 1] range in new columns 'scaled_tokens' and 'scaled_latency'.
 # Your solution:
 
+min_est_input = df['est_input_tokens'].min()
+max_est_input = df['est_input_tokens'].max()
+diff=max_est_input-min_est_input
+df['scaled_tokens'] = round((df['est_input_tokens']- min_est_input)/(diff))
+df['scaled_tokens'].value_counts()
 
+min_latency_ms_capped = df['latency_ms_capped'].min()
+max_latency_ms_capped = df['latency_ms_capped'].max()
+diff_ = max_latency_ms_capped - min_latency_ms_capped
+df['scaled_latency'] = round((df['latency_ms_capped']-min_latency_ms_capped)/(diff_))
+df['scaled_latency'].value_counts()
 # Q9 [Stratified Train/Validation Split for RLHF Datasets]:
 # Context: Preference datasets must maintain identical distributions of high/low quality samples across train and validation splits.
 # Business/ML Purpose: Partition data into 80% train and 20% validation sets while preserving 'is_high_quality' class ratios.

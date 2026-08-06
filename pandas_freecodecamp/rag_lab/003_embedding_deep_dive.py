@@ -49,6 +49,8 @@ large_time = (time.time() - start_time) * 1000
 
 print(f"MiniLM-L6-v2  -> Dimensions: {embeddings_small.shape[1]} | Encoding Time: {small_time:.2f} ms")
 print(f"mpnet-base-v2 -> Dimensions: {embeddings_large.shape[1]} | Encoding Time: {large_time:.2f} ms")
+embeddings_small.shape
+embeddings_large.shape
 print("=" * 40 + "\n")
 
 # -------------------------------------------------------------------
@@ -56,7 +58,7 @@ print("=" * 40 + "\n")
 # -------------------------------------------------------------------
 client = chromadb.Client()
 
-# Chroma collection using custom embeddings explicitly
+# Chroma collection using custom embeddings explicitl
 collection = client.create_collection(
     name="episode_003_custom_embeds",
     metadata={"hnsw:space": "cosine"}
