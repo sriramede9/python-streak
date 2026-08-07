@@ -133,6 +133,7 @@ df['scaled_latency'].value_counts()
 # Task: Deterministically shuffle `df` (random_state=42) and create `train_df` (80%) and `val_df` (20%) stratified by 'is_high_quality'.
 # Your solution:
 
+train_Df,value_df=train_test_split(df,random_state=42,stratify=df['is_high_quality'],test_size=0.2)
 
 # Q10 [Dense Float32 NumPy Feature Matrix Export]:
 # Context: Exporting tabular features for deep learning or GBDT (LightGBM/XGBoost) model consumption.
@@ -141,3 +142,7 @@ df['scaled_latency'].value_counts()
 # Task: Select features ['est_input_tokens', 'est_output_tokens', 'scaled_latency', 'is_high_quality'], verify 0 nulls, and extract 2D array `X` (features) and 1D array `y` ('is_high_quality').
 # Your solution:
 
+assert df[['est_input_tokens', 'est_output_tokens', 'scaled_latency', 'is_high_quality']].isna().sum().sum() == 0
+
+X_features=df[['est_input_tokens', 'est_output_tokens', 'scaled_latency', 'is_high_quality']].to_numpy(dtype=np.float32)
+Y_features = df['is_high_quality']
