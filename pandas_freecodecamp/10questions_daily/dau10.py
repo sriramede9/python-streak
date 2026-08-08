@@ -52,9 +52,9 @@ df["ip_country"] = df["ip_country"].replace("nan", "UNKNOWN_COUNTRY")
 df = df.sort_values(["user_id", "timestamp"])
 
 # 2. Calculate and assign the rolling count safely
-df["tx_count_10m"] = (
-    df.groupby("user_id").rolling("10min", on="timestamp")["timestamp"].count().values
-)
+rolling_counts=df.groupby("user_id").rolling("10min", on="timestamp")["timestamp"].count().rename('tx_count_10ms').reset_index()
+df= pd.merge(df,rolling_counts,on=['user_id','timestamp'],how='left')
+df.head()
 
 
 # Q3 [Logarithmic Power Transformation for Heavily Skewed Distibutions]:
@@ -98,8 +98,9 @@ df["merchant_risk_score"] = df.groupby("merchant_category")["is_fraud"].transfor
 q1, q3 = df["amount"].quantile([0.25, 0.75])
 iqr = q3 - q1
 df["amount_capped"] = df["amount"]
-condition = df["amount"] > q3 + (3.0 * iqr)
-df.loc[condition, "amount_capped"] = iqr
+upper_bound = q3 + (3.0 * iqr)
+condition = df["amount"] > upper_bound
+df.loc[condition, "amount_capped"] = upper_bound
 
 # Q7 [Binary Risk Feature Extraction - Domain Heuristics]:
 # Context: Combining foreign IP origin and high-risk merchant types represents a high-probability fraud heuristic.
@@ -181,4 +182,4 @@ x=   balanced_df[
             "is_high_risk_tx",
         ]
     ].to_numpy(dtype=np.float32)
-y = df['is_fraud'].to_numpy()
+y = balanced_df['is_fraud'].to_numpy()
