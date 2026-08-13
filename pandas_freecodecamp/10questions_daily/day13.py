@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+from sklearn.model_selection import train_test_split
 # Dataset: Synthetic LLM Alignment & Fine-Tuning Evaluation Corpus
 np.random.seed(42)
 n_samples = 1000
@@ -111,6 +111,7 @@ valid_eval_df.loc[reward_score_condition,'is_accepted'] = 1
 # Task: Generate one-hot encoded columns for 'model_family' using prefix 'model' and concatenate them back to `valid_eval_df`.
 # Your solution:
 
+valid_eval_df=pd.get_dummies(prefix='model',dtype=int,columns=['model_family'],data=valid_eval_df)
 
 # Q8 [Min-Max Feature Scaling on Performance Metrics]:
 # Context: Combining continuous throughput and length metrics into tabular classifiers requires uniform scale normalization [0.0, 1.0].
@@ -119,6 +120,7 @@ valid_eval_df.loc[reward_score_condition,'is_accepted'] = 1
 # Task: Scale 'tokens_per_sec' into a new column 'scaled_throughput' bounded between 0.0 and 1.0.
 # Your solution:
 
+valid_eval_df['scaled_throughput']=(valid_eval_df['tokens_per_sec'] - valid_eval_df['tokens_per_sec'].min())/(valid_eval_df['tokens_per_sec'].max() - valid_eval_df['tokens_per_sec'].min()) 
 
 # Q9 [Stratified Train/Validation Partitioning for Preference Models]:
 # Context: Evaluation sets for DPO/RLHF models must maintain identical proportions of accepted vs rejected responses.
@@ -127,10 +129,15 @@ valid_eval_df.loc[reward_score_condition,'is_accepted'] = 1
 # Task: Partition `valid_eval_df` into an 80% training set (`train_df`) and 20% validation set (`val_df`), preserving the ratio of 'is_accepted' targets.
 # Your solution:
 
-
+train_df,val_df = train_test_split(valid_eval_df,test_size=0.20,random_state=42,stratify=valid_eval_df['is_accepted'])
 # Q10 [Dense Float32 Feature Matrix Export]:
 # Context: Exporting tabular features into zero-NaN NumPy float32 matrices for PyTorch/XGBoost model consumption.
 # Business/ML Purpose: Ensure structural matrix completeness prior to tensor allocation.
 # Expected Skill: Column selection, verification with `.isna().sum()`, and `.to_numpy(dtype=np.float32)` conversion.
 # Task: From `valid_eval_df`, select features ['token_ratio', 'tokens_per_sec', 'scaled_throughput', 'is_code_prompt'], verify zero nulls, and extract 2D feature matrix `X` and 1D target array `y` ('is_accepted').
 # Your solution:
+
+assert valid_eval_df[['token_ratio', 'tokens_per_sec', 'scaled_throughput', 'is_code_prompt']].isna().sum().sum() == 0
+
+X = valid_eval_df[['token_ratio', 'tokens_per_sec', 'scaled_throughput', 'is_code_prompt']].to_numpy(dtype=np.float32)
+Y = valid_eval_df['is_accepted'].to_numpy(np.float32)
