@@ -13,7 +13,7 @@ DIM = 128
 
 # Create random L2-normalized synthetic dataset
 dataset = np.random.randn(NUM_VECTORS, DIM).astype(np.float32)
-dataset /= np.linalg.norm(dataset, axis=1, keepdims=True) # this is the step doing normalization for all our data pre saving
+dataset /= np.linalg.norm(dataset, axis=1, keepdims=True) # this is the step doing normalization for all our data pre saving    
 
 query = np.random.randn(1, DIM).astype(np.float32)
 query /= np.linalg.norm(query, axis=1, keepdims=True)
@@ -44,8 +44,8 @@ print("=" * 45 + "\n")
 NUM_CLUSTERS = 32  # Number of Voronoi cells (nlist)
 
 print("Building IVF Index (Clustering vector space into 32 cells)...")
-kmeans = KMeans(n_clusters=NUM_CLUSTERS, random_state=42, n_init=5)
-cluster_labels = kmeans.fit_predict(dataset)
+kmeans = KMeans(n_clusters=NUM_CLUSTERS, random_state=42, n_init=5) # this means take 5 turns to break 10k vectors into 32 groups [neighbourino groups] so that kmeans can keep the best one and ditch the rest
+cluster_labels = kmeans.fit_predict(dataset) # assigning which group each group belongs to
 centroids = kmeans.cluster_centers_
 
 # Build Inverted Index map: cluster_id -> list of document indices
@@ -59,7 +59,7 @@ def ivf_search(query_vec: np.ndarray, nprobe: int = 2, k: int = 5):
     """
     start = time.time()
     # Find closest centroids
-    centroid_scores = np.dot(centroids, query_vec.T).squeeze()
+    centroid_scores = np.dot(centroids, query_vec.T).squeeze() # instead of dot producting 10k you are doing only 32
     closest_clusters = np.argsort(centroid_scores)[::-1][:nprobe]
     
     # Gather candidate document indices
