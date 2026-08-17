@@ -44,7 +44,7 @@ print("=" * 45 + "\n")
 NUM_CLUSTERS = 32  # Number of Voronoi cells (nlist)
 
 print("Building IVF Index (Clustering vector space into 32 cells)...")
-kmeans = KMeans(n_clusters=NUM_CLUSTERS, random_state=42, n_init=5) # this means take 5 turns to break 10k vectors into 32 groups [neighbourino groups] so that kmeans can keep the best one and ditch the rest
+kmeans = KMeans(n_clusters=NUM_CLUSTERS, random_state=42, n_init=5) # this means take 5 turns to break 10k vectors into 32 groups [neighbourino groups] so that kmeans can keep the best one and ditch the rest, also keep the best wirh lower inertia whicj means less effort to find the approximate 
 cluster_labels = kmeans.fit_predict(dataset) # assigning which group each group belongs to
 centroids = kmeans.cluster_centers_
 
