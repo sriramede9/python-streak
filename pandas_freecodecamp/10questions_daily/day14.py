@@ -40,7 +40,9 @@ df = pd.DataFrame({
 # Expected Skill: `.dropna()` on text columns combined with string stripping `.str.strip()` and boolean filtering.
 # Task: Create a cleaned DataFrame `clean_catalog_df` by dropping rows where 'text_description' is NaN OR reduces to an empty string after stripping whitespace.
 # Your solution:
-df.dropna(sub=())
+df.info()
+df['text_description']=df['text_description'].str.strip().replace('',np.nan)
+clean_catalog_df=df.dropna(subset=['text_description'])
 
 # Q2 [Dimension Consistency Validation]:
 # Context: Vector search engines (Qdrant/Milvus) require uniform embedding dimensions (e.g., exactly 768 dimensions).
