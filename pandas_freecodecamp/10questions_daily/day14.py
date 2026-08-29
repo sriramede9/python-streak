@@ -51,6 +51,7 @@ clean_catalog_df=df.dropna(subset=['text_description'])
 # Task: Filter `clean_catalog_df` to keep only items where 'text_embed_dim' is equal to 768.
 # Your solution:
 
+clean_catalog_df=clean_catalog_df[clean_catalog_df['text_embed_dim'] == 768]
 
 # Q3 [Text Normalization for Hybrid Keyword-Vector Indexing]:
 # Context: Combining dense vector search with sparse BM25 retrieval requires normalized text attributes.
@@ -59,7 +60,14 @@ clean_catalog_df=df.dropna(subset=['text_description'])
 # Task: Create a column 'normalized_desc' in `clean_catalog_df` where text is lowercased and all non-alphanumeric characters (except spaces) are removed.
 # Your solution:
 
-
+# Optional: collapses multiple spaces into a single space and trims ends
+clean_catalog_df['normalized_desc'] = (
+    clean_catalog_df['text_description']
+    .str.lower()
+    .str.replace(r'[^a-zA-Z0-9 ]', '', regex=True)
+    .str.replace(r'\s+', ' ', regex=True)
+    .str.strip()
+)
 # Q4 [URL Feature Extraction & Image Path Sanitization]:
 # Context: Broken or malformed CDN image paths cause vision-encoder pipelines to fail during batch feature extraction.
 # Business/ML Purpose: Validate valid HTTP/HTTPS image endpoints for multi-modal vision models.
