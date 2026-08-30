@@ -75,7 +75,7 @@ clean_catalog_df['normalized_desc'] = (
 # Task: Create a binary column 'valid_image_url' (1 or 0) indicating whether 'image_url' is non-null AND starts with 'http://' or 'https://'.
 # Your solution:
 
-
+# i knkw this is the question to use np.where 
 # Q5 [Logit / CTR Probability Power Scaling]:
 # Context: Low-magnitude probability metrics (like CTR ranging from 0.0 to 0.25) can be crushed by large-scale embedding weights.
 # Business/ML Purpose: Apply logit or log-odds power transforms to stretch probability features for tabular-neural rankers.
