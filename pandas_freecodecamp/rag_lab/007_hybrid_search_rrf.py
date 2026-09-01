@@ -20,6 +20,13 @@ doc_ids = [f"doc_{i}" for i in range(len(documents))]
 tokenized_corpus = [doc.lower().split(" ") for doc in documents]
 bm25 = BM25Okapi(tokenized_corpus)
 
+# BM25 = TF [Term Frequency] + IDF [Inverse Document Frequency] + length normalization
+
+#Does this document contain my terms, 
+# how important are those terms, 
+# how often do they occur,
+#  and how much should document length matter?
+
 # --- B. DENSE INDEX (ChromaDB) ---
 client = chromadb.Client()
 embedding_fn = embedding_functions.DefaultEmbeddingFunction()

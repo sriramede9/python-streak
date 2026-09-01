@@ -76,6 +76,8 @@ clean_catalog_df['normalized_desc'] = (
 # Your solution:
 
 # i knkw this is the question to use np.where 
+clean_catalog_df['valid_image_url']= clean_catalog_df['image_url'].str.startswith(("https","http"),na=False).astype(int)
+
 # Q5 [Logit / CTR Probability Power Scaling]:
 # Context: Low-magnitude probability metrics (like CTR ranging from 0.0 to 0.25) can be crushed by large-scale embedding weights.
 # Business/ML Purpose: Apply logit or log-odds power transforms to stretch probability features for tabular-neural rankers.
@@ -83,6 +85,7 @@ clean_catalog_df['normalized_desc'] = (
 # Task: Create a new column 'log_ctr' calculated as `np.log1p(df['click_through_rate'])`.
 # Your solution:
 
+clean_catalog_df['log_ctr'] = np.log1p(clean_catalog_df['click_through_rate'])
 
 # Q6 [Vector L2 Normalization Correction]:
 # Context: Fast cosine distance via dot product requires vectors to have an exact $L_2$ norm equal to 1.0.
