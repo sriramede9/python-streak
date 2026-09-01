@@ -94,6 +94,7 @@ clean_catalog_df['log_ctr'] = np.log1p(clean_catalog_df['click_through_rate'])
 # Task: Scale 'vector_l2_norm' by dividing it by its maximum value across the dataset to bound magnitudes between 0.0 and 1.0 in a column 'normalized_magnitude'.
 # Your solution:
 
+clean_catalog_df['normalized_magnitude']=clean_catalog_df['vector_l2_norm']/clean_catalog_df['vector_l2_norm'].max()
 
 # Q7 [One-Hot Encoding for Catalog Categories]:
 # Context: Tabular ranking models combine dense text embeddings with categorical catalog tags.
@@ -101,7 +102,9 @@ clean_catalog_df['log_ctr'] = np.log1p(clean_catalog_df['click_through_rate'])
 # Expected Skill: `pd.get_dummies()` with `dtype=int` and custom prefixes.
 # Task: Generate one-hot encoded dummy columns for 'catalog_category' using the prefix 'cat' and concatenate them back to `clean_catalog_df`.
 # Your solution:
+dummies=pd.get_dummies(clean_catalog_df['catalog_category'],prefix='cat',dtype=int)
 
+pd.concat([clean_catalog_df, dummies],axis=1)
 
 # Q8 [Statistical Outlier Capping on CTR]:
 # Context: Extreme click-through-rate spikes (e.g., bot traffic) skew ranking loss calculations.
