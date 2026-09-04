@@ -113,6 +113,9 @@ pd.concat([clean_catalog_df, dummies],axis=1)
 # Task: Calculate the 99th percentile of 'click_through_rate'. Create 'ctr_capped' where any value exceeding the 99th percentile is set to that threshold.
 # Your solution:
 
+quantile_99 = clean_catalog_df['click_through_rate'].quantile(0.99)
+mask = clean_catalog_df['click_through_rate'] > quantile_99
+clean_catalog_df['ctr_capped'] = np.where(mask, quantile_99, clean_catalog_df['click_through_rate'])   
 
 # Q9 [Stratified Train/Validation Split for Promoted Item Rankers]:
 # Context: Evaluation sets for ranking models must maintain identical ratios of promoted vs organic catalog items.
