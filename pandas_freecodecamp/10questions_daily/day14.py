@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+from sklearn.model_selection import train_test_split
 # Dataset: Synthetic Multimodal E-Commerce Embedding & Metadata Index
 np.random.seed(2026)
 n_samples = 1200
@@ -124,6 +124,7 @@ clean_catalog_df['ctr_capped'] = np.where(mask, quantile_99, clean_catalog_df['c
 # Task: Partition `clean_catalog_df` into an 80% training set (`train_df`) and 20% validation set (`val_df`), preserving the ratio of 'is_promoted' targets.
 # Your solution:
 
+train_df,val_df = train_test_split(clean_catalog_df,test_size=0.20,random_state=42,stratify=clean_catalog_df['is_promoted'])
 
 # Q10 [Dense Float32 Feature Matrix Export for Vector-Rankers]:
 # Context: Exporting tabular metadata features into zero-NaN NumPy float32 matrices for tensor model input.
