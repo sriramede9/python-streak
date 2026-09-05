@@ -133,3 +133,17 @@ train_df,val_df = train_test_split(clean_catalog_df,test_size=0.20,random_state=
 # Task: From `clean_catalog_df`, select features ['log_ctr', 'normalized_magnitude', 'valid_image_url', 'is_promoted'], verify zero nulls, and extract 2D feature matrix `X` and 1D target array `y` ('is_promoted').
 # Your solution:
 
+features = ['log_ctr', 'normalized_magnitude', 'valid_image_url', 'is_promoted']
+
+# Select features
+feature_df = clean_catalog_df[features]
+
+# Verify zero nulls
+print(feature_df.isna().sum())
+
+# Extract 2D feature matrix and 1D target
+X = feature_df.to_numpy(dtype=np.float32)
+y = clean_catalog_df['is_promoted'].to_numpy(dtype=np.float32)
+
+print("X shape:", X.shape)
+print("y shape:", y.shape)
