@@ -32,8 +32,12 @@ df = pd.DataFrame({
 # Expected Skill: `.ffill()` combined with `.bfill()` for residual edge cases.
 # Task: Impute missing values in 'radar_distance_m' by forward-filling the most recent valid measurement, filling any initial leading NaNs with 0.0.
 # Your solution:
+df.info()
+df.head()
+if pd.isna(df['radar_distance_m'][0]):
+    df['radar_distance_m'][0] = 0.0
 
-
+df['radar_distance_ma'].ffill()    
 # Q2 [Sliding Window Velocity Acceleration Feature Engineering]:
 # Context: Raw vehicle speed is insufficient for predicting sudden braking or collision risk; rate of change (acceleration) is required.
 # Business/ML Purpose: Engineer continuous acceleration features ($\Delta v / \Delta t$) across sequential telemetry frames.
