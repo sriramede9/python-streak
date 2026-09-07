@@ -37,14 +37,16 @@ df.head()
 if pd.isna(df['radar_distance_m'][0]):
     df['radar_distance_m'][0] = 0.0
 
-df['radar_distance_ma'].ffill()    
+df['radar_distance_m'].ffill()    
 # Q2 [Sliding Window Velocity Acceleration Feature Engineering]:
 # Context: Raw vehicle speed is insufficient for predicting sudden braking or collision risk; rate of change (acceleration) is required.
 # Business/ML Purpose: Engineer continuous acceleration features ($\Delta v / \Delta t$) across sequential telemetry frames.
 # Expected Skill: `.diff()` on numeric columns or `.shift()` subtraction.
 # Task: Calculate frame-to-frame vehicle acceleration in $m/s^2$ assuming a constant 0.1s timestep ($100ms$), storing it in 'vehicle_accel_mps2'.
 # Your solution:
-
+df.head()
+df.info()
+df['vehicle_accel_mps2'] = df['vehicle_speed_mps'].diff()/0.1
 
 # Q3 [Text/Regex Feature Extraction - Bounding Box Coordinates]:
 # Context: Object detection heads output string-formatted bounding box coordinates `bbox:[x,y,w,h]` that must be unpacked into numerical features.
