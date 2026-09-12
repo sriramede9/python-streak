@@ -55,6 +55,15 @@ df['vehicle_accel_mps2'] = df['vehicle_speed_mps'].diff()/0.1
 # Task: Extract the 3rd and 4th integers (width and height) from 'bounding_box_str', convert to float, and calculate 'bbox_area' ($w \times h$). Assign 0.0 for invalid/missing boxes.
 # Your solution:
 
+# Extract the 3rd (width) and 4th (height) integers using named regex capture groups
+dims = df['bounding_box_str'].str.extract(
+    r'bbox:\[\s*\d+\s*,\s*\d+\s*,\s*(?P<width>\d+)\s*,\s*(?P<height>\d+)\s*\]'
+)
+
+# Convert extracted strings to float, compute area, and fill invalid/missing entries with 0.0
+df['bbox_area'] = (
+    dims['width'].astype(float) * dims['height'].astype(float)
+).fillna(0.0)
 
 # Q4 [Outlier Filtering & Physical Constraints Thresholding]:
 # Context: Corrupted CAN-bus messages occasionally record physically impossible vehicle speeds (e.g., negative speed or > 100 m/s).
