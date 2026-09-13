@@ -80,7 +80,9 @@ df_filtered = df[df["vehicle_speed_mps"].between(0.0, 80.0, inclusive="both")].c
 # Expected Skill: Vectorized NumPy trigonometric functions (`np.cos`, `np.sin`).
 # Task: Compute 2D position coordinates: $x = \text{radar\_distance\_m} \times \cos(\text{steering\_angle\_rad})$ and $y = \text{radar\_distance\_m} \times \sin(\text{steering\_angle\_rad})$.
 # Your solution:
-
+# Compute 2D Cartesian coordinates (x, y) from polar coordinates (r, theta)
+df["x"] = df["radar_distance_m"] * np.cos(df["steering_angle_rad"])
+df["y"] = df["radar_distance_m"] * np.sin(df["steering_angle_rad"])
 
 # Q6 [Low-Frequency Categorical Grouping & Noise Reduction]:
 # Context: Rare or ambiguous detection classes ('unknown', 'static_obstacle') introduce label noise into object tracking models.
