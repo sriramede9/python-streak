@@ -71,7 +71,8 @@ df['bbox_area'] = (
 # Expected Skill: Boolean filtering across physical range bounds (`0.0 <= speed <= 80.0`).
 # Task: Filter `df` to keep only rows where 'vehicle_speed_mps' falls strictly within the physically plausible range of 0.0 to 80.0 m/s.
 # Your solution:
-
+# Filter df for physically plausible speeds between 0.0 and 80.0 m/s (inclusive)
+df_filtered = df[df["vehicle_speed_mps"].between(0.0, 80.0, inclusive="both")].copy()
 
 # Q5 [Coordinate Transformation - Polar to Cartesian Feature Generation]:
 # Context: Distance and steering angle represent polar coordinates relative to the ego-vehicle.
