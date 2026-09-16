@@ -90,7 +90,15 @@ df["y"] = df["radar_distance_m"] * np.sin(df["steering_angle_rad"])
 # Expected Skill: `.value_counts()` or `.isin()` conditional replacement with `np.where()`.
 # Task: Replace any 'object_detected_class' that is NOT 'pedestrian', 'vehicle', or 'cyclist' with the string 'other' in a column 'class_clean'.
 # Your solution:
+# Define the set of target primary classes
+valid_classes = ["pedestrian", "vehicle", "cyclist"]
 
+# Consolidate rare or noisy classes into 'other' using np.where and .isin()
+df["class_clean"] = np.where(
+    df["object_detected_class"].isin(valid_classes),
+    df["object_detected_class"],
+    "other",
+)
 
 # Q7 [Target Risk Encoding for Object Classes]:
 # Context: Certain detected objects (e.g., pedestrians, cyclists) carry higher baseline accident severity risk than vehicles or static obstacles.
