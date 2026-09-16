@@ -106,7 +106,7 @@ df["class_clean"] = np.where(
 # Expected Skill: Grouped probability calculation using `.groupby().transform('mean')`.
 # Task: Calculate the empirical 'is_critical_event' rate for each 'class_clean' category and assign it to 'class_risk_score'.
 # Your solution:
-
+df.groupby('class_clean') ['is_critical_event'].mean()
 
 # Q8 [Min-Max Scaling on Kinematic Features]:
 # Context: Kinematic features (speed, acceleration, distance) span disparate numerical scales that slow gradient descent.
