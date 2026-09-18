@@ -130,7 +130,12 @@ df['scaled_distance'] = (df['radar_distance_m'] - df['radar_distance_m'].min()) 
 # Task: Sort `df` by 'timestamp' and split it into an 80% training set (`train_df`) and 20% validation set (`val_df`) without shuffling.
 # Your solution:
 
+df = df.sort_values("timestamp")
 
+split_idx = int(len(df) * 0.8)
+
+train_df = df.iloc[:split_idx]
+val_df = df.iloc[split_idx:]
 # Q10 [Dense Float32 Sensor Matrix Export for Trajectory Neural Nets]:
 # Context: Production inference engines require clean, zero-NaN NumPy float32 matrices for tensor allocation.
 # Business/ML Purpose: Verify complete feature matrix integrity (0 NaNs) and export numeric arrays.
