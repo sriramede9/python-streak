@@ -115,7 +115,14 @@ df.groupby('class_clean') ['is_critical_event'].mean()
 # Task: Scale 'vehicle_speed_mps' and 'radar_distance_m' into new columns 'scaled_speed' and 'scaled_distance' bounded between 0.0 and 1.0.
 # Your solution:
 
+# Vectorized Min-Max scaling using (x - min) / (max - min)
+df['scaled_speed'] = (df['vehicle_speed_mps'] - df['vehicle_speed_mps'].min()) / (
+    df['vehicle_speed_mps'].max() - df['vehicle_speed_mps'].min()
+)
 
+df['scaled_distance'] = (df['radar_distance_m'] - df['radar_distance_m'].min()) / (
+    df['radar_distance_m'].max() - df['radar_distance_m'].min()
+)
 # Q9 [Time-Series Deterministic Sequential Train/Val Split]:
 # Context: Telemetry data exhibits high temporal autocorrelation; random splitting causes severe data leakage between consecutive frames.
 # Business/ML Purpose: Partition data into sequential train (first 80%) and validation (final 20%) sets based strictly on timestamp order.
