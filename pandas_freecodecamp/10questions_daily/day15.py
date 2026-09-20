@@ -142,3 +142,28 @@ val_df = df.iloc[split_idx:]
 # Expected Skill: Column selection, verification with `.isna().sum()`, and `.to_numpy(dtype=np.float32)` conversion.
 # Task: From `train_df`, select features ['scaled_speed', 'scaled_distance', 'vehicle_accel_mps2', 'bbox_area', 'class_risk_score'], verify 0 NaNs, and export 2D matrix `X` and 1D target array `y` ('is_critical_event').
 # Your solution:
+
+# 1. Define feature and target column names
+feature_cols = [
+    'scaled_speed',
+    'scaled_distance',
+    'vehicle_accel_mps2',
+    'bbox_area',
+    'class_risk_score'
+]
+target_col = 'is_critical_event'
+
+# 2. Verify complete matrix integrity (0 NaNs across selected features and target)
+nan_counts_X = train_df[feature_cols].isna().sum()
+nan_counts_y = train_df[target_col].isna().sum()
+
+assert nan_counts_X.sum() == 0, f"Found NaNs in features:\n{nan_counts_X[nan_counts_X > 0]}"
+assert nan_counts_y == 0, f"Found {nan_counts_y} NaNs in target column '{target_col}'"
+
+# 3. Export clean 2D feature matrix X and 1D target array y as float32 NumPy arrays
+X = train_df[feature_cols].to_numpy(dtype=np.float32)
+y = train_df[target_col].to_numpy(dtype=np.float32)
+
+# Verify exported array shapes and dtypes
+assert X.ndim == 2 and X.dtype == np.float32
+assert y.ndim == 1 and y.dtype == np.float32
