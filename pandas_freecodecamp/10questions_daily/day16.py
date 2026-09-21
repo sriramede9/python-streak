@@ -28,7 +28,13 @@ df = pd.DataFrame({
 # Expected Skill: Vectorized string splitting `.str.split()` and `.str.join()`.
 # Task: Extract the first 3 octets of 'src_ip' (e.g., '192.168.1.105' -> '192.168.1') into 'ip_subnet'. Fill any missing IP rows with '0.0.0'.
 # Your solution:
-
+df['ip_subnet'] = (
+    df['src_ip']
+    .str.split('.')
+    .str[:3]
+    .str.join('.')
+    .fillna('0.0.0')
+)
 
 # Q2 [Logarithmic Transformation for Skewed Packet Payload Sizes]:
 # Context: Network packet byte sizes follow a heavy right-skewed distribution (from 1 byte to mega-bytes).
