@@ -50,7 +50,13 @@ df['log_payload_bytes'] = np.log1p(df['payload_bytes'])
 # Expected Skill: `.isin()` filtering combined with `.fillna()`.
 # Task: Replace any 'flags_str' that is NOT in ['SYN', 'ACK', 'SYN-ACK', 'FIN-ACK', 'RST'] with 'UNKNOWN_FLAG'.
 # Your solution:
+valid_flags = ['SYN', 'ACK', 'SYN-ACK', 'FIN-ACK', 'RST']
 
+df['flags_str'] = (
+    df['flags_str']
+    .where(df['flags_str'].isin(valid_flags), 'UNKNOWN_FLAG')
+    .fillna('UNKNOWN_FLAG')
+)
 
 # Q4 [Domain Categorization & Port Risk Mapping]:
 # Context: Specific network ports (e.g., SSH: 22, RDP: 3389) carry higher baseline risk for brute-force cyber attacks.
