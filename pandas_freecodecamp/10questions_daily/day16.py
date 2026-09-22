@@ -43,7 +43,7 @@ df['ip_subnet'] = (
 # Task: Create a new column 'log_payload_bytes' calculated as `np.log1p(df['payload_bytes'])`.
 # Your solution:
 
-
+df['log_payload_bytes'] = np.log1p(df['payload_bytes'])
 # Q3 [Categorical Flag Cleaning & Pattern Validation]:
 # Context: Malformed TCP flag strings in packet captures can cause one-hot encoders to crash or generate garbage categories.
 # Business/ML Purpose: Filter invalid TCP flag strings before encoding features for intrusion detection classifiers.
