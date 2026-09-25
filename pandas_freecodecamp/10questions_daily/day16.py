@@ -64,7 +64,11 @@ df['flags_str'] = (
 # Expected Skill: `.isin()` conditional mapping with `np.where()`.
 # Task: Create a binary column 'is_admin_port' (1 or 0) indicating whether 'dest_port' is in `[22, 3389, 8080]`.
 # Your solution:
-
+df["is_admin_port"] = np.where(
+    df["dest_port"].isin([22, 3389, 8080]),
+    1,
+    0
+)
 
 # Q5 [Sliding Window Traffic Burst Velocity Calculation]:
 # Context: Distributed Denial of Service (DDoS) attacks are characterized by rapid bursts of requests in short time windows.
