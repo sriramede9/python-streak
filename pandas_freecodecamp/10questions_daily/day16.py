@@ -76,7 +76,16 @@ df["is_admin_port"] = np.where(
 # Expected Skill: `.groupby()` with `.rolling()` window frequency calculations on time-indexed data.
 # Task: Calculate a 1-second rolling count of flows per 'ip_subnet' based on 'timestamp' and store in 'subnet_flow_count_1s'.
 # Your solution:
+df = df.sort_values("timestamp")
 
+df["subnet_flow_count_1s"] = (
+    df.set_index("timestamp")
+      .groupby("ip_subnet")["ip_subnet"]
+      .rolling("1s")
+      .count()
+      .reset_index(level=0, drop=True)
+      .values
+)
 
 # Q6 [Anomaly Score Z-Standardization]:
 # Context: Raw anomaly scores output by statistical detectors have varying means and standard deviations across sensor nodes.
