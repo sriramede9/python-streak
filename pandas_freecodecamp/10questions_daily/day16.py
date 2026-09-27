@@ -93,7 +93,9 @@ df["subnet_flow_count_1s"] = (
 # Expected Skill: Vectorized Z-score calculation `(x - mean) / std`.
 # Task: Compute the Z-score of 'anomaly_score' across the dataset and store it in a new column 'z_anomaly_score'.
 # Your solution:
-
+df["z_anomaly_score"] = (
+    df["anomaly_score"] - df["anomaly_score"].mean()
+) / df["anomaly_score"].std()
 
 # Q7 [Outlier Capping / Winsorization on Packet Rates]:
 # Context: Extreme traffic spikes (e.g., network test spikes) create statistical outliers that distort classification boundaries.
