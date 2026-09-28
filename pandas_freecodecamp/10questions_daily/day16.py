@@ -104,7 +104,13 @@ df["z_anomaly_score"] = (
 # Task: Calculate the 99th percentile of 'payload_bytes'. Create 'payload_capped' where any value exceeding the 99th percentile is set to that threshold.
 # Your solution:
 
+p99 = df["payload_bytes"].quantile(0.99)
 
+df["payload_capped"] = np.where(
+    df["payload_bytes"] > p99,
+    p99,
+    df["payload_bytes"]
+)
 # Q8 [One-Hot Encoding for Validated TCP Flags]:
 # Context: Tabular intrusion detection models require categorical TCP state indicators in binary numerical format.
 # Business/ML Purpose: Convert TCP flags into one-hot dummy variables while retaining all valid categories.
