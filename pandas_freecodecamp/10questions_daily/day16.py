@@ -118,7 +118,13 @@ df["payload_capped"] = np.where(
 # Task: Generate one-hot encoded columns for 'flags_str' using the prefix 'flag' and join them back to `df`.
 # Your solution:
 
+flags_encoded = pd.get_dummies(
+    df["flags_str"],
+    prefix="flag",
+    dtype=int
+)
 
+df = df.join(flags_encoded)
 # Q9 [Chronological Train/Validation Partitioning]:
 # Context: Network traffic exhibits strong temporal dependencies; random splits introduce temporal data leakage from future traffic patterns.
 # Business/ML Purpose: Partition data into historical training (first 80%) and future validation (final 20%) sets based strictly on timestamp order.
