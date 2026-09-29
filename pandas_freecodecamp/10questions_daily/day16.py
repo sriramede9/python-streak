@@ -132,7 +132,12 @@ df = df.join(flags_encoded)
 # Task: Ensure `df` is sorted by 'timestamp' and split it into an 80% training set (`train_df`) and 20% validation set (`val_df`) without shuffling.
 # Your solution:
 
+df = df.sort_values('timestamp').reset_index(drop=True)
 
+split_idx = int(len(df) * 0.8)
+
+train_df = df.iloc[:split_idx]
+val_df = df.iloc[split_idx:]
 # Q10 [Dense Float32 Intrusion Feature Matrix Export]:
 # Context: Exporting tabular network metrics into zero-NaN NumPy float32 matrices for PyTorch or XGBoost threat models.
 # Business/ML Purpose: Verify structural matrix integrity (0 NaNs) prior to tensor allocation.
