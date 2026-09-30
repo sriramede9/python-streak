@@ -144,3 +144,26 @@ val_df = df.iloc[split_idx:]
 # Expected Skill: Column selection, verification with `.isna().sum()`, and `.to_numpy(dtype=np.float32)` conversion.
 # Task: From `train_df`, select features ['log_payload_bytes', 'is_admin_port', 'z_anomaly_score', 'subnet_flow_count_1s'], verify zero nulls, and extract 2D feature matrix `X` and 1D target array `y` ('is_malicious').
 # Your solution:
+
+import numpy as np
+
+# 1. Define feature and target columns
+feature_cols = [
+    'log_payload_bytes',
+    'is_admin_port',
+    'z_anomaly_score',
+    'subnet_flow_count_1s',
+]
+target_col = 'is_malicious'
+
+# 2. Verify zero null values across features and target
+assert (
+    train_df[feature_cols].isna().sum().sum() == 0
+), f"NaNs found in features:\n{train_df[feature_cols].isna().sum()}"
+assert (
+    train_df[target_col].isna().sum() == 0
+), f"NaNs found in target: {train_df[target_col].isna().sum()}"
+
+# 3. Export dense 2D feature matrix X and 1D target array y as float32
+X = train_df[feature_cols].to_numpy(dtype=np.float32)
+y = train_df[target_col].to_numpy(dtype=np.float32)
