@@ -33,7 +33,13 @@ df = pd.DataFrame({
 # Expected Skill: Regex string extraction `.str.extract()` and numeric type conversion.
 # Task: Extract the numeric float value following 'allocate' (e.g., '12.50' from 'allocate 12.50 GiB') into 'oom_requested_gib'. Fill NaNs with 0.0.
 # Your solution:
-
+# Assuming the log text is in df['log'] (adjust the column name if needed)
+df['oom_requested_gib'] = (
+    df['log']
+    .str.extract(r'allocate\s+(\d+(?:\.\d+)?)', expand=False)
+    .astype(float)
+    .fillna(0.0)
+)
 
 # Q2 [Categorical Cleaning & Health Status Classification]:
 # Context: Mixed log verbosity creates messy string categories that crash one-hot encoders.
