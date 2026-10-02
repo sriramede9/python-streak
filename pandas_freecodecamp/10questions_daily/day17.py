@@ -48,7 +48,26 @@ df['oom_requested_gib'] = (
 # Task: Create 'log_status' categorized as 'OOM_ERROR' (if log contains 'OUT_OF_MEMORY'), 'THERMAL_WARN' (if contains 'Thermal'), 'OK' (if contains 'STATUS_OK' or 'SYSTEM_HEALTH'), and 'OTHER' for all else.
 # Your solution:
 
+import numpy as np
+import pandas as pd
 
+# Define boolean matching conditions
+# na=False safely handles null/missing log entries without throwing errors
+conditions = [
+    df['log'].str.contains('OUT_OF_MEMORY', na=False),
+    df['log'].str.contains('Thermal', na=False),
+    df['log'].str.contains('STATUS_OK|SYSTEM_HEALTH', regex=True, na=False)
+]
+
+# Define corresponding target categories
+choices = [
+    'OOM_ERROR',
+    'THERMAL_WARN',
+    'OK'
+]
+
+# Assign categorized states; unmatched logs default to 'OTHER'
+df['log_status'] = np.select(conditions, choices, default='OTHER')
 # Q3 [Sliding Window GPU Temperature Spikes]:
 # Context: Thermal throttling triggers sudden GPU frequency drops and model iteration latency spikes.
 # Business/ML Purpose: Compute rolling maximum temperatures per node over short time windows to detect rapid thermal accumulation.
