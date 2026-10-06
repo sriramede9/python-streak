@@ -74,7 +74,17 @@ df['log_status'] = np.select(conditions, choices, default='OTHER')
 # Expected Skill: `.groupby()` with `.rolling()` window max calculations on time-indexed data.
 # Task: Calculate a 5-second rolling maximum of 'gpu_temp_celsius' per 'node_id' based on 'timestamp' and store in 'rolling_max_temp_5s'.
 # Your solution:
+# Ensure timestamp is datetime and sort values chronologically per node
+df["timestamp"] = pd.to_datetime(df["timestamp"])
+df = df.sort_values(by=["node_id", "timestamp"])
 
+# Compute 5-second rolling maximum using the on='timestamp' parameter
+df["rolling_max_temp_5s"] = (
+    df.groupby("node_id")
+    .rolling(window="5s", on="timestamp")["gpu_temp_celsius"]
+    .max()
+    .reset_index(level=0, drop=True)
+)
 
 # Q4 [Physical Constraints Filtering & Thermal Sensor Validation]:
 # Context: Sensor degradation or bus corruptions occasionally report invalid GPU temperatures (e.g., negative or > 120°C).
