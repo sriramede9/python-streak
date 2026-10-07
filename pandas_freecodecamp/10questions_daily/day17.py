@@ -93,7 +93,8 @@ df["rolling_max_temp_5s"] = (
 # Task: Filter `df` to retain only rows where 'gpu_temp_celsius' falls strictly within the valid range of 0.0°C to 110.0°C.
 # Your solution:
 
-
+# Multi-condition boolean masking
+filtered_df = df[(df['gpu_temp_celsius'] >= 0.0) & (df['gpu_temp_celsius'] <= 110.0)]
 # Q5 [Power Transformation for Skewed Memory Allocation Features]:
 # Context: GPU memory consumption exhibits heavy bi-modal distribution (idle vs full 80GB VRAM allocation).
 # Business/ML Purpose: Scale memory utilization linearly relative to max capacity (81,920 MB) to generate standardized load ratios.
